@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'filter_screen.dart'; // Импортируем экран фильтров
-import 'category_screen.dart'; // Импортируем экран категорий
 
 class CatalogScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFF6F5F0), // Молочный фон
       appBar: AppBar(
         title: Text('Каталог', style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
@@ -23,94 +23,81 @@ class CatalogScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            // Поле поиска, кнопка фильтров и гамбургер-меню
+            // Поле поиска и кнопка фильтров
+            TextField(
+              decoration: InputDecoration(
+                hintText: 'Поиск товаров...',
+                hintStyle: TextStyle(color: Colors.grey), // Серый цвет подсказки
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide(color: Colors.black), // Черная рамка
+                ),
+                filled: true,
+                fillColor: Colors.white, // Белый фон
+                prefixIcon: Icon(Icons.search, color: Colors.black),
+              ),
+            ),
+            SizedBox(height: 16),
+
+            // Фильтры
+            Text('Фильтры', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+            SizedBox(height: 8),
             Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Поиск товаров...',
-                      hintStyle: TextStyle(color: Colors.grey),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide(color: Colors.black),
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      prefixIcon: Icon(Icons.search, color: Colors.black),
-                    ),
-                  ),
+                FilterChip(
+                  label: Text('Женщинам', style: TextStyle(color: Colors.black)),
+                  selected: false,
+                  onSelected: (bool value) {},
+                  backgroundColor: Colors.white, // Белый фон
+                  selectedColor: Colors.black, // Черный фон при выборе
+                  labelStyle: TextStyle(color: Colors.white), // Белый текст при выборе
                 ),
-                SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    // Переход на экран фильтров
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => FilterScreen()),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: Text('Фильтры'),
+                SizedBox(width: 8),
+                FilterChip(
+                  label: Text('Мужчинам', style: TextStyle(color: Colors.black)),
+                  selected: false,
+                  onSelected: (bool value) {},
+                  backgroundColor: Colors.white,
+                  selectedColor: Colors.black,
+                  labelStyle: TextStyle(color: Colors.white),
                 ),
-                SizedBox(width: 10),
-                IconButton(
-                  icon: Icon(Icons.menu, color: Colors.black), // Иконка гамбургера
-                  onPressed: () {
-                    // Показать меню с категориями
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (context) {
-                        return Container(
-                          height: 200,
-                          child: Column(
-                            children: [
-                              ListTile(
-                                title: Text('Женщинам'),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => CategoryScreen(gender: 'women')),
-                                  );
-                                },
-                              ),
-                              ListTile(
-                                title: Text('Мужчинам'),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => CategoryScreen(gender: 'men')),
-                                  );
-                                },
-                              ),
-                              ListTile(
-                                title: Text('Детям'),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => CategoryScreen(gender: 'kids')),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
+                SizedBox(width: 8),
+                FilterChip(
+                  label: Text('Детям', style: TextStyle(color: Colors.black)),
+                  selected: false,
+                  onSelected: (bool value) {},
+                  backgroundColor: Colors.white,
+                  selectedColor: Colors.black,
+                  labelStyle: TextStyle(color: Colors.white),
                 ),
               ],
             ),
             SizedBox(height: 16),
 
+            // Категории
+            Text('Категории', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+            SizedBox(height: 8),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  CategoryChip(label: 'Одежда'),
+                  SizedBox(width: 8),
+                  CategoryChip(label: 'Обувь'),
+                  SizedBox(width: 8),
+                  CategoryChip(label: 'Аксессуары'),
+                  SizedBox(width: 8),
+                  CategoryChip(label: 'Косметика'),
+                  SizedBox(width: 8),
+                  CategoryChip(label: 'Электроника'),
+                ],
+              ),
+            ),
+            SizedBox(height: 16),
+
             // Свежие товары
-            Text('Свежие товары', style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.black)),
+            Text('Свежие товары', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
             Expanded(
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -128,6 +115,23 @@ class CatalogScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class CategoryChip extends StatelessWidget {
+  final String label;
+
+  const CategoryChip({Key? key, required this.label}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Chip(
+      label: Text(label, style: TextStyle(color: Colors.black)),
+      backgroundColor: Colors.white, // Белый фон
+      onDeleted: () {
+        // Действие для удаления категории
+      },
     );
   }
 }

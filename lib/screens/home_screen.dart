@@ -3,6 +3,7 @@ import 'catalog_screen.dart';
 import 'profile_screen.dart';
 import 'products_screen.dart';
 import 'filter_screen.dart'; // Импортируем экран фильтров
+import 'cart_screen.dart'; // Импортируем экран корзины
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -15,6 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _children = [
     ProductsScreen(), // Экран товаров
     CatalogScreen(),  // Экран каталогов
+    CartScreen(cartItems: []), // Экран корзины (передаем пустой список на старте)
     ProfileScreen(),  // Экран профиля
   ];
 
@@ -34,18 +36,24 @@ class _HomeScreenState extends State<HomeScreen> {
         currentIndex: _currentIndex, // Подсвечиваем текущую вкладку
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Товары',
+            icon: Icon(Icons.search, color: Colors.black), // Черная иконка
+            label: '', // Пустая метка
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.category),
-            label: 'Каталоги',
+            icon: Icon(Icons.category, color: Colors.black), // Черная иконка
+            label: '', // Пустая метка
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Профиль',
+            icon: Icon(Icons.shopping_cart, color: Colors.black), // Черная иконка
+            label: '', // Пустая метка
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person, color: Colors.black), // Черная иконка
+            label: '', // Пустая метка
           ),
         ],
+        showSelectedLabels: false, // Скрыть текстовые метки для выбранных элементов
+        showUnselectedLabels: false, // Скрыть текстовые метки для невыбранных элементов
       ),
     );
   }

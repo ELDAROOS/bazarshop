@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'auth_screen.dart';
+import 'registration_screen.dart'; // Импортируем экран регистрации
 import 'home_screen.dart'; // Импортируем экран домашней страницы
 
 class WelcomeScreen extends StatelessWidget {
@@ -42,9 +43,10 @@ class WelcomeScreen extends StatelessWidget {
               SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
+                  // Переход на экран регистрации
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AuthScreen(isRegistration: true)),
+                    MaterialPageRoute(builder: (context) => RegistrationScreen()),
                   );
                 },
                 style: ElevatedButton.styleFrom(

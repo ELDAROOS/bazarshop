@@ -1,7 +1,61 @@
 import 'package:flutter/material.dart';
 import 'filter_screen.dart'; // Импортируем экран фильтров
+import 'product_model.dart'; // Импортируем модель продукта
+import 'cart_screen.dart'; // Импортируем экран корзины
+import 'product_card.dart'; // Импортируем карточку товара
 
-class ProductsScreen extends StatelessWidget {
+class ProductsScreen extends StatefulWidget {
+  @override
+  _ProductsScreenState createState() => _ProductsScreenState();
+}
+
+class _ProductsScreenState extends State<ProductsScreen> {
+  List<Product> cartItems = []; // Список товаров в корзине
+
+  // Пример товаров
+  final List<Product> products = [
+    Product(
+      productId: 1,
+      productName: 'Товар 1',
+      productPrice: 10.0,
+      description: 'Описание товара 1',
+      image: 'https://via.placeholder.com/150',
+      productSize: 'M',
+      productColor: 'Красный',
+      categoryId: 1,
+    ),
+    Product(
+      productId: 2,
+      productName: 'Товар 2',
+      productPrice: 15.0,
+      description: 'Описание товара 2',
+      image: 'https://via.placeholder.com/150',
+      productSize: 'L',
+      productColor: 'Синий',
+      categoryId: 1,
+    ),
+    Product(
+      productId: 3,
+      productName: 'Товар 3',
+      productPrice: 20.0,
+      description: 'Описание товара 3',
+      image: 'https://via.placeholder.com/150',
+      productSize: 'S',
+      productColor: 'Зеленый',
+      categoryId: 1,
+    ),
+    // Добавьте больше товаров по желанию
+  ];
+
+  void _addToCart(Product product) {
+    setState(() {
+      cartItems.add(product); // Добавляем продукт в корзину
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${product.productName} добавлен в корзину')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,7 +67,11 @@ class ProductsScreen extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.shopping_cart, color: Colors.black),
             onPressed: () {
-              // Действие для корзины
+              // Переход на экран корзины
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CartScreen(cartItems: cartItems)),
+              );
             },
           ),
         ],
@@ -61,10 +119,18 @@ class ProductsScreen extends StatelessWidget {
               ],
             ),
           ),
-          // Здесь можно добавить отображение товаров
+          // Отображение товаров в карточках
           Expanded(
-            child: Center(
-              child: Text('Список товаров', style: TextStyle(fontSize: 24, color: Colors.black)),
+            child: GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, // Две карточки в ряд
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+              ),
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                return ProductCard(product: products[index]); // Используем карточку товара
+              },
             ),
           ),
         ],
