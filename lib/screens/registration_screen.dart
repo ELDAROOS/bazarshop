@@ -1,12 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class RegistrationScreen extends StatelessWidget {
   final TextEditingController _firstnameController = TextEditingController();
   final TextEditingController _lastnameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _ageController = TextEditingController();
-  String? _gender;
+
+  Future<void> _registerUser(BuildContext context) async {
+    String firstname = _firstnameController.text;
+    String lastname = _lastnameController.text;
+    String email = _emailController.text;
+    String password = _passwordController.text;
+
+    // Проверка полей
+    if (firstname.isNotEmpty &&
+        lastname.isNotEmpty &&
+        email.isNotEmpty &&
+        password.isNotEmpty) {
+      // Отправка данных на сервер
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:5000/register'), // Замените на URL вашего сервера
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'firstname': firstname,
+          'lastname': lastname,
+          'pass': password,
+          'email': email,
+          'userRole': 'user', // Вы можете изменить роль пользователя по необходимости
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        // Успешная регистрация
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Регистрация успешна!'),
+        ));
+        Navigator.pop(context); // Возвращаемся назад
+      } else {
+        // Обработка ошибок
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Ошибка регистрации: ${response.body}'),
+        ));
+      }
+    } else {
+      // Обработка ошибок
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Пожалуйста, заполните все поля'),
+      ));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,70 +103,9 @@ class RegistrationScreen extends StatelessWidget {
                 ),
                 obscureText: true, // Скрыть ввод пароля
               ),
-              SizedBox(height: 10),
-              TextField(
-                controller: _ageController,
-                decoration: InputDecoration(
-                  labelText: 'Возраст',
-                  hintText: 'Введите ваш возраст',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number, // Числовой ввод для возраста
-              ),
-              SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: ListTile(
-                      title: Text('Мужчина'),
-                      leading: Radio<String>(
-                        value: 'M',
-                        groupValue: _gender,
-                        onChanged: (String? value) {
-                          _gender = value;
-                        },
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: ListTile(
-                      title: Text('Женщина'),
-                      leading: Radio<String>(
-                        value: 'F',
-                        groupValue: _gender,
-                        onChanged: (String? value) {
-                          _gender = value;
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  // Логика обработки регистрации
-                  String firstname = _firstnameController.text;
-                  String lastname = _lastnameController.text;
-                  String email = _emailController.text;
-                  String password = _passwordController.text;
-                  String age = _ageController.text;
-
-                  // Проверка полей и дальнейшая логика регистрации
-                  if (firstname.isNotEmpty &&
-                      lastname.isNotEmpty &&
-                      email.isNotEmpty &&
-                      password.isNotEmpty &&
-                      age.isNotEmpty &&
-                      _gender != null) {
-                    // Здесь вы можете добавить свою логику для регистрации
-                    print('Регистрация успешна: $firstname $lastname, $email, $age, $_gender');
-                    Navigator.pop(context); // Возвращаемся назад
-                  } else {
-                    // Обработка ошибок
-                    print('Пожалуйста, заполните все поля');
-                  }
-                },
+                onPressed: () => _registerUser(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.black,
