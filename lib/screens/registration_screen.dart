@@ -57,63 +57,151 @@ class RegistrationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white, // Белый фон для всего экрана
       appBar: AppBar(
-        title: Text('Регистрация', style: TextStyle(color: Colors.black)),
+        title: Text(
+          'Регистрация',
+          style: TextStyle(
+            color: Colors.black,
+            fontFamily: 'Times New Roman',
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: Colors.white,
+        iconTheme: IconThemeData(color: Colors.black),
+        elevation: 0,
       ),
       body: Container(
-        color: Color(0xFFF6F5F0), // Молочный фон
+        color: Colors.white, // Белый фон для содержимого
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextField(
                 controller: _firstnameController,
+                style: TextStyle(fontFamily: 'Times New Roman'),
                 decoration: InputDecoration(
                   labelText: 'Имя',
+                  labelStyle: TextStyle(
+                    color: Colors.black,
+                    fontFamily: 'Times New Roman',
+                  ),
                   hintText: 'Введите ваше имя',
-                  border: OutlineInputBorder(),
+                  hintStyle: TextStyle(
+                    color: Colors.grey,
+                    fontFamily: 'Times New Roman',
+                  ),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
                 ),
               ),
               SizedBox(height: 10),
               TextField(
                 controller: _lastnameController,
+                style: TextStyle(fontFamily: 'Times New Roman'),
                 decoration: InputDecoration(
                   labelText: 'Фамилия',
+                  labelStyle: TextStyle(
+                    color: Colors.black,
+                    fontFamily: 'Times New Roman',
+                  ),
                   hintText: 'Введите вашу фамилию',
-                  border: OutlineInputBorder(),
+                  hintStyle: TextStyle(
+                    color: Colors.grey,
+                    fontFamily: 'Times New Roman',
+                  ),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
                 ),
               ),
               SizedBox(height: 10),
               TextField(
                 controller: _emailController,
+                style: TextStyle(fontFamily: 'Times New Roman'),
                 decoration: InputDecoration(
                   labelText: 'Email',
+                  labelStyle: TextStyle(
+                    color: Colors.black,
+                    fontFamily: 'Times New Roman',
+                  ),
                   hintText: 'Введите ваш email',
-                  border: OutlineInputBorder(),
+                  hintStyle: TextStyle(
+                    color: Colors.grey,
+                    fontFamily: 'Times New Roman',
+                  ),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
                 ),
               ),
               SizedBox(height: 10),
               TextField(
                 controller: _passwordController,
+                style: TextStyle(fontFamily: 'Times New Roman'),
                 decoration: InputDecoration(
                   labelText: 'Пароль',
+                  labelStyle: TextStyle(
+                    color: Colors.black,
+                    fontFamily: 'Times New Roman',
+                  ),
                   hintText: 'Введите пароль',
-                  border: OutlineInputBorder(),
-                ),
-                obscureText: true, // Скрыть ввод пароля
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () => _registerUser(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+                  hintStyle: TextStyle(
+                    color: Colors.grey,
+                    fontFamily: 'Times New Roman',
+                  ),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                 ),
-                child: Text('Зарегистрироваться'),
+                obscureText: true,
+              ),
+              SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () => _registerUser(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black, // Черный фон кнопки
+                    foregroundColor: Colors.white, // Белый текст
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30), // Закругленные углы кнопки
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24), // Добавление отступов
+                  ),
+                  child: Text(
+                    'Зарегистрироваться',
+                    style: TextStyle(
+                      fontFamily: 'Times New Roman',
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

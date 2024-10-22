@@ -59,13 +59,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF6F5F0), // Молочный фон
+      backgroundColor: Colors.white, // Белый фон
       appBar: AppBar(
-        title: Text('Товары', style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
+        title: Text('Товары', style: TextStyle(color: Colors.black)), // Черный текст
+        backgroundColor: Colors.white, // Белый фон
         actions: [
           IconButton(
-            icon: Icon(Icons.shopping_cart, color: Colors.black),
+            icon: Icon(Icons.shopping_cart, color: Colors.black), // Черная иконка
             onPressed: () {
               // Переход на экран корзины
               Navigator.push(
@@ -87,14 +87,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   child: TextField(
                     decoration: InputDecoration(
                       hintText: 'Поиск товаров...',
-                      hintStyle: TextStyle(color: Colors.grey),
+                      hintStyle: TextStyle(color: Colors.grey), // Серый текст для подсказки
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
                         borderSide: BorderSide(color: Colors.black), // Черная рамка
                       ),
                       filled: true,
                       fillColor: Colors.white, // Белый фон
-                      prefixIcon: Icon(Icons.search, color: Colors.black),
+                      prefixIcon: Icon(Icons.search, color: Colors.black), // Черная иконка
                     ),
                   ),
                 ),
@@ -114,7 +114,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  child: Text('Фильтры'),
+                  child: Text('Фильтры'), // Черный текст
                 ),
               ],
             ),

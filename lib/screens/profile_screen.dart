@@ -13,11 +13,11 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Профиль', style: TextStyle(color: Colors.black)),
+        title: Text('Профиль', style: TextStyle(color: Colors.black, fontFamily: 'Times New Roman')),
         backgroundColor: Colors.white,
       ),
       body: Container(
-        color: Color(0xFFF6F5F0), // Молочный цвет фона
+        color: Colors.white, // Белый цвет фона
         padding: const EdgeInsets.all(16.0),
         child: isGuest ? _buildGuestProfile(context) : _buildUserProfile(),
       ),
@@ -31,7 +31,7 @@ class ProfileScreen extends StatelessWidget {
         children: [
           Text(
             'Вы вошли как гость.',
-            style: TextStyle(fontSize: 18, color: Colors.black),
+            style: TextStyle(fontSize: 18, color: Colors.black, fontFamily: 'Times New Roman'),
           ),
           SizedBox(height: 20),
           ElevatedButton(
@@ -43,14 +43,14 @@ class ProfileScreen extends StatelessWidget {
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white, // Белый фон кнопки
-              foregroundColor: Colors.black, // Черный текст
+              backgroundColor: Colors.black, // Черный фон кнопки
+              foregroundColor: Colors.white, // Белый текст
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
                 side: BorderSide(color: Colors.black), // Черная рамка
               ),
             ),
-            child: Text('Войти'),
+            child: Text('Войти', style: TextStyle(fontFamily: 'Times New Roman')),
           ),
         ],
       ),
@@ -63,42 +63,12 @@ class ProfileScreen extends StatelessWidget {
       children: <Widget>[
         Text(
           'Информация о пользователе',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black, fontFamily: 'Times New Roman'),
         ),
         SizedBox(height: 20),
-        ListTile(
-          title: Text('Имя', style: TextStyle(color: Colors.black)),
-          subtitle: Text(userName.isNotEmpty ? userName : 'Ваше имя', style: TextStyle(color: Colors.grey)),
-          trailing: IconButton(
-            icon: Icon(Icons.edit, color: Colors.black),
-            onPressed: () {
-              // Логика редактирования имени
-            },
-          ),
-        ),
-        Divider(color: Colors.black), // Черная линия разделителя
-        ListTile(
-          title: Text('Email', style: TextStyle(color: Colors.black)),
-          subtitle: Text(userEmail.isNotEmpty ? userEmail : 'your.email@example.com', style: TextStyle(color: Colors.grey)),
-          trailing: IconButton(
-            icon: Icon(Icons.edit, color: Colors.black),
-            onPressed: () {
-              // Логика редактирования email
-            },
-          ),
-        ),
-        Divider(color: Colors.black), // Черная линия разделителя
-        ListTile(
-          title: Text('Телефон', style: TextStyle(color: Colors.black)),
-          subtitle: Text(userPhone.isNotEmpty ? userPhone : '+1 (234) 567-8901', style: TextStyle(color: Colors.grey)),
-          trailing: IconButton(
-            icon: Icon(Icons.edit, color: Colors.black),
-            onPressed: () {
-              // Логика редактирования телефона
-            },
-          ),
-        ),
-        Divider(color: Colors.black), // Черная линия разделителя
+        _buildListTile('Имя', userName.isNotEmpty ? userName : 'Ваше имя'),
+        _buildListTile('Email', userEmail.isNotEmpty ? userEmail : 'your.email@example.com'),
+        _buildListTile('Телефон', userPhone.isNotEmpty ? userPhone : '+1 (234) 567-8901'),
         // Кнопка для выхода из аккаунта
         SizedBox(height: 20),
         Center(
@@ -107,16 +77,34 @@ class ProfileScreen extends StatelessWidget {
               // Логика выхода из аккаунта
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white, // Белый фон кнопки
-              foregroundColor: Colors.black, // Черный текст
+              backgroundColor: Colors.black, // Черный фон кнопки
+              foregroundColor: Colors.white, // Белый текст
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
                 side: BorderSide(color: Colors.black), // Черная рамка
               ),
             ),
-            child: Text('Выйти из аккаунта'),
+            child: Text('Выйти из аккаунта', style: TextStyle(fontFamily: 'Times New Roman')),
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildListTile(String title, String subtitle) {
+    return Column(
+      children: [
+        ListTile(
+          title: Text(title, style: TextStyle(color: Colors.black, fontFamily: 'Times New Roman')),
+          subtitle: Text(subtitle, style: TextStyle(color: Colors.grey, fontFamily: 'Times New Roman')),
+          trailing: IconButton(
+            icon: Icon(Icons.edit, color: Colors.black),
+            onPressed: () {
+              // Логика редактирования
+            },
+          ),
+        ),
+        Divider(color: Colors.black), // Черная линия разделителя
       ],
     );
   }

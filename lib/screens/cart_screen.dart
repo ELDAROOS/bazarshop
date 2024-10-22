@@ -10,16 +10,16 @@ class CartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Корзина', style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
+        title: Text('Корзина', style: TextStyle(color: Colors.black)), // Черный текст
+        backgroundColor: Colors.white, // Белый фон
       ),
       body: Container(
-        color: Color(0xFFF6F5F0), // Молочный цвет фона
+        color: Colors.white, // Белый фон
         child: cartItems.isEmpty
             ? Center(
           child: Text(
             'Корзина пуста',
-            style: TextStyle(fontSize: 24, color: Colors.black),
+            style: TextStyle(fontSize: 24, color: Colors.black), // Черный текст
           ),
         )
             : ListView.builder(
@@ -27,10 +27,25 @@ class CartScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             return Card(
               margin: EdgeInsets.all(10),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              elevation: 2,
               child: ListTile(
-                leading: Image.network(cartItems[index].image),
-                title: Text(cartItems[index].productName),
-                subtitle: Text('Цена: \$${cartItems[index].productPrice}'),
+                leading: Image.network(
+                  cartItems[index].image,
+                  fit: BoxFit.cover,
+                  width: 50, // Фиксированная ширина изображения
+                  height: 50, // Фиксированная высота изображения
+                ),
+                title: Text(
+                  cartItems[index].productName,
+                  style: TextStyle(color: Colors.black), // Черный текст
+                ),
+                subtitle: Text(
+                  'Цена: \$${cartItems[index].productPrice}',
+                  style: TextStyle(color: Colors.black), // Черный текст
+                ),
               ),
             );
           },

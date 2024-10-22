@@ -5,13 +5,13 @@ class CatalogScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF6F5F0), // Молочный фон
+      backgroundColor: Colors.white, // Белый фон
       appBar: AppBar(
-        title: Text('Каталог', style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
+        title: Text('Каталог', style: TextStyle(color: Colors.black)), // Черный текст
+        backgroundColor: Colors.white, // Белый фон
         actions: [
           IconButton(
-            icon: Icon(Icons.shopping_cart, color: Colors.black),
+            icon: Icon(Icons.shopping_cart, color: Colors.black), // Черная иконка
             onPressed: () {
               // Действие для корзины
             },
@@ -127,7 +127,7 @@ class CategoryChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Chip(
-      label: Text(label, style: TextStyle(color: Colors.black)),
+      label: Text(label, style: TextStyle(color: Colors.black)), // Черный текст
       backgroundColor: Colors.white, // Белый фон
       onDeleted: () {
         // Действие для удаления категории
@@ -168,14 +168,31 @@ class ProductCard extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Text(
               'Товар $index',
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black), // Черный текст
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
               'Цена: \$${(index + 1) * 10}', // Замените на реальную цену
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(color: Colors.black), // Черный текст
+            ),
+          ),
+          SizedBox(height: 8),
+          Center(
+            child: ElevatedButton(
+              onPressed: () {
+                // Логика добавления в корзину
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white, // Белый фон кнопки
+                foregroundColor: Colors.black, // Черный текст
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  side: BorderSide(color: Colors.black), // Черная рамка
+                ),
+              ),
+              child: Text('Добавить в корзину'), // Текст кнопки
             ),
           ),
         ],

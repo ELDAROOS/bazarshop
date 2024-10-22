@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF6F5F0), // Молочный фон
+      backgroundColor: Colors.white, // Белый фон
       body: _children[_currentIndex], // Показываем текущий экран
       bottomNavigationBar: BottomNavigationBar(
         onTap: onTabTapped,
@@ -54,6 +54,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
         showSelectedLabels: false, // Скрыть текстовые метки для выбранных элементов
         showUnselectedLabels: false, // Скрыть текстовые метки для невыбранных элементов
+        backgroundColor: Colors.white, // Белый фон для навигационной панели
+        selectedItemColor: Colors.black, // Черный цвет для выбранного элемента
+        unselectedItemColor: Colors.black54, // Полу-прозрачный черный для невыбранного
       ),
     );
   }
