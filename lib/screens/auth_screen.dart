@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class AuthScreen extends StatelessWidget {
   final bool isRegistration;
@@ -7,10 +9,39 @@ class AuthScreen extends StatelessWidget {
 
   AuthScreen({required this.isRegistration});
 
+  Future<void> _authenticate(String email, String password) async {
+    // URL вашего Flask-сервера
+    String url = isRegistration
+        ? 'http://10.0.2.2:5000/register' // URL для регистрации
+        : 'http://10.0.2.2:5000/login'; // URL для входа
+
+    try {
+      // Отправляем POST-запрос на сервер
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({'email': email, 'password': password}),
+      );
+
+      if (response.statusCode == 200) {
+        // Успешная регистрация/вход
+        final responseData = json.decode(response.body);
+        print('Успех: ${responseData}');
+      } else {
+        // Ошибка с сервера
+        print('Ошибка сервера: ${response.statusCode}');
+        print('Ответ: ${response.body}');
+      }
+    } catch (error) {
+      // Ошибка сети или другие проблемы
+      print('Ошибка подключения: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Белый фон для всего экрана
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           isRegistration ? 'Регистрация' : 'Вход',
@@ -25,7 +56,7 @@ class AuthScreen extends StatelessWidget {
         elevation: 0,
       ),
       body: Container(
-        color: Colors.white, // Белый фон для содержимого
+        color: Colors.white,
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
@@ -90,19 +121,14 @@ class AuthScreen extends StatelessWidget {
                     String email = _emailController.text;
                     String password = _passwordController.text;
 
-                    if (isRegistration) {
-                      print('Регистрация: $email, $password');
-                    } else {
-                      print('Вход: $email, $password');
-                    }
-
-                    Navigator.pop(context);
+                    // Вызов функции для авторизации или регистрации
+                    _authenticate(email, password);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30), // Закругленные углы кнопки
+                      borderRadius: BorderRadius.circular(30),
                     ),
                     padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                   ),
@@ -111,7 +137,7 @@ class AuthScreen extends StatelessWidget {
                     style: TextStyle(
                       fontFamily: 'Times New Roman',
                       fontWeight: FontWeight.bold,
-                      fontSize: 18, // Увеличенный размер шрифта
+                      fontSize: 18,
                     ),
                   ),
                 ),
