@@ -1,13 +1,13 @@
-// product_model.dart
 class Product {
-  final int productId; // Идентификатор продукта
-  final String productName; // Название продукта
-  final double productPrice; // Цена продукта
-  final String description; // Описание продукта
-  final String image; // URL изображения продукта
-  final String productSize; // Размер продукта
-  final String productColor; // Цвет продукта
-  final int categoryId; // Идентификатор категории
+  final int productId;
+  final String productName;
+  final double productPrice;
+  final String description;
+  final String image;
+  final String productSize;
+  final String productColor;
+  final int categoryId;
+  final double productRating; // Добавлено поле для рейтинга продукта
 
   Product({
     required this.productId,
@@ -18,5 +18,6 @@ class Product {
     required this.productSize,
     required this.productColor,
     required this.categoryId,
+    this.productRating = 0.0, // Значение по умолчанию для рейтинга
   });
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'men_screen.dart';
 import 'women_screen.dart';
 import 'teen_screen.dart';
@@ -13,67 +14,61 @@ class WelcomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Spacer(), // Поднимаем заголовок выше
+            Spacer(),
             Text(
               'BAZAR',
-              style: TextStyle(
-                fontSize: 64, // Увеличиваем размер шрифта
+              style: GoogleFonts.playfairDisplay( // Используем шрифт Playfair Display
+                fontSize: 64,
                 fontWeight: FontWeight.bold,
-                fontFamily: 'Times New Roman', // Попробуем Times New Roman для схожести
-                letterSpacing: 8.0, // Увеличиваем расстояние между буквами
+                letterSpacing: 8.0,
                 color: Colors.black,
               ),
-              textAlign: TextAlign.center,
             ),
-            Spacer(flex: 2), // Увеличиваем отступ после заголовка
-
-            // Кнопка для Мужского раздела
-            _buildCategoryButton(
-              context,
-              'Мужской',
-              'assets/images/men_image.jpg',
-              MenScreen(),
-            ),
-            SizedBox(height: 16), // Добавляем пространство между кнопками
-
-            // Кнопка для Женского раздела
-            _buildCategoryButton(
-              context,
-              'Женский',
-              'assets/images/women_image.jpg',
-              WomenScreen(),
-            ),
-            SizedBox(height: 16), // Добавляем пространство между кнопками
-
-            // Кнопка для Подросткового раздела
-            _buildCategoryButton(
-              context,
-              'Подростковый',
-              'assets/images/teen_image.jpg',
-              TeenScreen(),
-            ),
-            Spacer(), // Пространство внизу экрана
+            Spacer(flex: 2),
+            _buildCategoryButton(context, 'Мужской', 'assets/images/men_image.jpg', MenScreen()),
+            SizedBox(height: 16),
+            _buildCategoryButton(context, 'Женский', 'assets/images/women_image.jpg', WomenScreen()),
+            SizedBox(height: 16),
+            _buildCategoryButton(context, 'Подростковый', 'assets/images/teen_image.jpg', TeenScreen()),
+            Spacer(),
           ],
         ),
       ),
     );
   }
 
-  // Функция для создания большой кнопки с изображением
   Widget _buildCategoryButton(BuildContext context, String label, String imagePath, Widget screen) {
+    return CategoryButton(label: label, imagePath: imagePath, screen: screen);
+  }
+}
+
+class CategoryButton extends StatelessWidget {
+  final String label;
+  final String imagePath;
+  final Widget screen;
+
+  const CategoryButton({required this.label, required this.imagePath, required this.screen, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ImageFullscreenScreen(imagePath: imagePath, screen: screen),
+          ),
+        );
       },
       child: Container(
-        height: 180, // Увеличиваем высоту кнопки
+        height: 180,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15), // Закругляем углы
+          borderRadius: BorderRadius.circular(15),
           image: DecorationImage(
             image: AssetImage(imagePath),
-            fit: BoxFit.cover, // Изображение будет покрывать кнопку
+            fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
-              Colors.black.withOpacity(0.6), // Применяем затемнение
+              Colors.black.withOpacity(0.6),
               BlendMode.darken,
             ),
           ),
@@ -81,14 +76,74 @@ class WelcomeScreen extends StatelessWidget {
         child: Center(
           child: Text(
             label,
-            style: TextStyle(
-              fontSize: 28, // Увеличиваем размер текста
+            style: GoogleFonts.playfairDisplay( // Используем шрифт Playfair Display
+              fontSize: 28,
               fontWeight: FontWeight.bold,
-              fontFamily: 'Times New Roman', // Применяем шрифт
-              color: Colors.white, // Белый текст на кнопке
+              color: Colors.white,
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class ImageFullscreenScreen extends StatelessWidget {
+  final String imagePath;
+  final Widget screen;
+
+  const ImageFullscreenScreen({required this.imagePath, required this.screen, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          Center(
+            child: Image.asset(
+              imagePath,
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+            ),
+          ),
+          Positioned(
+            top: 40,
+            left: 20,
+            child: IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ),
+          Positioned(
+            bottom: 50,
+            left: 20,
+            child: ElevatedButton(
+              onPressed: () {
+                // Переход к экрану
+                Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                elevation: 5,
+              ),
+              child: Text(
+                'Перейти',
+                style: GoogleFonts.playfairDisplay( // Используем шрифт Playfair Display
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
