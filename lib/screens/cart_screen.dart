@@ -10,41 +10,38 @@ class CartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Корзина', style: TextStyle(color: Colors.black)), // Черный текст
-        backgroundColor: Colors.white, // Белый фон
+        title: Text('Корзина', style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.white,
       ),
       body: Container(
-        color: Colors.white, // Белый фон
+        color: Colors.white,
         child: cartItems.isEmpty
             ? Center(
           child: Text(
             'Корзина пуста',
-            style: TextStyle(fontSize: 24, color: Colors.black), // Черный текст
+            style: TextStyle(fontSize: 24, color: Colors.black),
           ),
         )
             : ListView.builder(
           itemCount: cartItems.length,
           itemBuilder: (context, index) {
+            final item = cartItems[index];
             return Card(
               margin: EdgeInsets.all(10),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              elevation: 2,
               child: ListTile(
                 leading: Image.network(
-                  cartItems[index].image,
+                  item.image,
                   fit: BoxFit.cover,
-                  width: 50, // Фиксированная ширина изображения
-                  height: 50, // Фиксированная высота изображения
+                  width: 50,
+                  height: 50,
                 ),
                 title: Text(
-                  cartItems[index].productName,
-                  style: TextStyle(color: Colors.black), // Черный текст
+                  item.productName,
+                  style: TextStyle(color: Colors.black),
                 ),
                 subtitle: Text(
-                  'Цена: \$${cartItems[index].productPrice}',
-                  style: TextStyle(color: Colors.black), // Черный текст
+                  'Цена: \$${item.productPrice}',
+                  style: TextStyle(color: Colors.black),
                 ),
               ),
             );

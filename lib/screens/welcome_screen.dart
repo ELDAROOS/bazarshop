@@ -1,104 +1,92 @@
 import 'package:flutter/material.dart';
-import 'auth_screen.dart';
-import 'registration_screen.dart';
-import 'home_screen.dart';
+import 'men_screen.dart';
+import 'women_screen.dart';
+import 'teen_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Белый фон
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                'Добро пожаловать',
-                style: TextStyle(
-                  fontSize: 20, // Средний размер шрифта
-                  fontWeight: FontWeight.normal,
-                  fontFamily: 'Times New Roman', // Применение шрифта
-                  color: Colors.black, // Черный цвет текста
-                ),
-                textAlign: TextAlign.center,
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Spacer(), // Поднимаем заголовок выше
+            Text(
+              'BAZAR',
+              style: TextStyle(
+                fontSize: 64, // Увеличиваем размер шрифта
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Times New Roman', // Попробуем Times New Roman для схожести
+                letterSpacing: 8.0, // Увеличиваем расстояние между буквами
+                color: Colors.black,
               ),
-              SizedBox(height: 10),
-              Text(
-                'BAZAR',
-                style: TextStyle(
-                  fontSize: 48, // Большой размер шрифта
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Times New Roman', // Применение шрифта
-                  letterSpacing: 2.0, // Дополнительное пространство между буквами
-                  color: Colors.black, // Черный цвет текста
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AuthScreen(isRegistration: false)),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black, // Черный фон кнопки
-                  foregroundColor: Colors.white, // Белый текст
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30), // Закругленная кнопка
-                  ),
-                ),
-                child: Text(
-                  'Войти',
-                  style: TextStyle(
-                    fontFamily: 'Times New Roman', // Применение шрифта
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => RegistrationScreen()),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black, // Черный фон кнопки
-                  foregroundColor: Colors.white, // Белый текст
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30), // Закругленная кнопка
-                  ),
-                ),
-                child: Text(
-                  'Регистрация',
-                  style: TextStyle(
-                    fontFamily: 'Times New Roman', // Применение шрифта
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              SizedBox(height: 10),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomeScreen()),
-                  );
-                },
-                child: Text(
-                  'Войти как гость',
-                  style: TextStyle(
-                    color: Colors.black, // Черный текст
-                    fontFamily: 'Times New Roman', // Применение шрифта
-                  ),
-                ),
-              ),
-            ],
+              textAlign: TextAlign.center,
+            ),
+            Spacer(flex: 2), // Увеличиваем отступ после заголовка
+
+            // Кнопка для Мужского раздела
+            _buildCategoryButton(
+              context,
+              'Мужской',
+              'assets/images/men_image.jpg',
+              MenScreen(),
+            ),
+            SizedBox(height: 16), // Добавляем пространство между кнопками
+
+            // Кнопка для Женского раздела
+            _buildCategoryButton(
+              context,
+              'Женский',
+              'assets/images/women_image.jpg',
+              WomenScreen(),
+            ),
+            SizedBox(height: 16), // Добавляем пространство между кнопками
+
+            // Кнопка для Подросткового раздела
+            _buildCategoryButton(
+              context,
+              'Подростковый',
+              'assets/images/teen_image.jpg',
+              TeenScreen(),
+            ),
+            Spacer(), // Пространство внизу экрана
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Функция для создания большой кнопки с изображением
+  Widget _buildCategoryButton(BuildContext context, String label, String imagePath, Widget screen) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
+      },
+      child: Container(
+        height: 180, // Увеличиваем высоту кнопки
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15), // Закругляем углы
+          image: DecorationImage(
+            image: AssetImage(imagePath),
+            fit: BoxFit.cover, // Изображение будет покрывать кнопку
+            colorFilter: ColorFilter.mode(
+              Colors.black.withOpacity(0.6), // Применяем затемнение
+              BlendMode.darken,
+            ),
+          ),
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 28, // Увеличиваем размер текста
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Times New Roman', // Применяем шрифт
+              color: Colors.white, // Белый текст на кнопке
+            ),
           ),
         ),
       ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'welcome_screen.dart'; // Импортируем экран приветствия
+import 'vhod_screen.dart'; // Импортируем экран входа
 
 class ProfileScreen extends StatelessWidget {
   final bool isGuest; // Переменная для определения, гость ли пользователь
@@ -15,6 +15,7 @@ class ProfileScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Профиль', style: TextStyle(color: Colors.black, fontFamily: 'Times New Roman')),
         backgroundColor: Colors.white,
+        elevation: 1, // Легкая тень для выделения AppBar
       ),
       body: Container(
         color: Colors.white, // Белый цвет фона
@@ -30,16 +31,23 @@ class ProfileScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'Вы вошли как гость.',
+            'Вы не вошли в аккаунт.',
             style: TextStyle(fontSize: 18, color: Colors.black, fontFamily: 'Times New Roman'),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 20),
+          Text(
+            'Пожалуйста, войдите в свой аккаунт, чтобы получить доступ к полному функционалу.',
+            style: TextStyle(fontSize: 16, color: Colors.grey, fontFamily: 'Times New Roman'),
+            textAlign: TextAlign.center,
           ),
           SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-              // Переход на экран приветствия
+              // Переход на экран входа
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => WelcomeScreen()),
+                MaterialPageRoute(builder: (context) => VhodScreen()),
               );
             },
             style: ElevatedButton.styleFrom(
@@ -69,7 +77,6 @@ class ProfileScreen extends StatelessWidget {
         _buildListTile('Имя', userName.isNotEmpty ? userName : 'Ваше имя'),
         _buildListTile('Email', userEmail.isNotEmpty ? userEmail : 'your.email@example.com'),
         _buildListTile('Телефон', userPhone.isNotEmpty ? userPhone : '+1 (234) 567-8901'),
-        // Кнопка для выхода из аккаунта
         SizedBox(height: 20),
         Center(
           child: ElevatedButton(
