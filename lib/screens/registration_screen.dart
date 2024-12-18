@@ -21,14 +21,14 @@ class RegistrationScreen extends StatelessWidget {
         password.isNotEmpty) {
       // Отправка данных на сервер
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:5000/register'), // Замените на URL вашего сервера
+        Uri.parse('http://127.0.0.1:5000/register'), // Замените на URL вашего сервера
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(<String, String>{
           'firstname': firstname,
           'lastname': lastname,
-          'pass': password,
+          'password': password,  // Исправлено на 'password'
           'email': email,
           'userRole': 'user', // Вы можете изменить роль пользователя по необходимости
         }),
@@ -47,7 +47,7 @@ class RegistrationScreen extends StatelessWidget {
         ));
       }
     } else {
-      // Обработка ошибок
+      // Обработка ошибок, если поля не заполнены
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Пожалуйста, заполните все поля'),
       ));

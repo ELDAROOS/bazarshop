@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class AuthScreen extends StatelessWidget {
   final bool isRegistration;
@@ -6,6 +8,54 @@ class AuthScreen extends StatelessWidget {
   final TextEditingController _passwordController = TextEditingController();
 
   AuthScreen({required this.isRegistration});
+
+  Future<void> _handleAuth(BuildContext context) async {
+    String email = _emailController.text;
+    String password = _passwordController.text;
+
+    if (email.isNotEmpty && password.isNotEmpty) {
+      String url = isRegistration
+          ? 'http://127.0.0.1:5000/register'
+          : 'http://127.0.0.1:5000/login';
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // Успешный запрос
+        final data = jsonDecode(response.body);
+        if (isRegistration) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Регистрация прошла успешно!'),
+          ));
+        } else {
+          // Извлекаем email при успешной авторизации
+          String userEmail = data['email'];
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Добро пожаловать, $userEmail!'),
+          ));
+        }
+        Navigator.pop(context); // Закрыть экран авторизации
+      } else {
+        // Ошибка запроса
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Ошибка: ${response.body}'),
+        ));
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Пожалуйста, заполните все поля'),
+      ));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,18 +136,7 @@ class AuthScreen extends StatelessWidget {
               SizedBox(height: 20),
               Center(
                 child: ElevatedButton(
-                  onPressed: () {
-                    String email = _emailController.text;
-                    String password = _passwordController.text;
-
-                    if (isRegistration) {
-                      print('Регистрация: $email, $password');
-                    } else {
-                      print('Вход: $email, $password');
-                    }
-
-                    Navigator.pop(context);
-                  },
+                  onPressed: () => _handleAuth(context),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
                     foregroundColor: Colors.white,
