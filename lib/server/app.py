@@ -69,6 +69,29 @@ def login():
     else:
         return jsonify({'message': 'Invalid email or password'}), 400
 
+@app.route('/add_product', methods=['POST'])
+def add_product():
+    data = request.get_json()
+    name = data['name']
+    price = data['price']
+    description = data['description']
+
+    # Логика для добавления продукта в базу данных
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO products (name, price, description)
+        VALUES (%s, %s, %s)
+    """, (name, price, description))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return jsonify({'message': 'Product added successfully'}), 200
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
