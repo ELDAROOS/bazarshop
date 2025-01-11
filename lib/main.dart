@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
-import 'screens/welcome_screen.dart'; // Импортируем экран приветствия
+import 'package:video_player/video_player.dart';
 
+import 'screens/home_page.dart';
 void main() {
-  runApp(BazarApp());
+  runApp(MyApp());
 }
 
-class BazarApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Bazar',
-      theme: ThemeData(
-        primaryColor: Colors.black,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: WelcomeScreen(), // Задаем экран приветствия как стартовый
+      debugShowCheckedModeBanner: false,
+      home: HomePage(),
     );
   }
 }
