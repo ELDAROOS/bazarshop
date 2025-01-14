@@ -1,12 +1,15 @@
-import 'package:bazarshop/screens/cart_page.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'auth_page.dart';
-import 'catalog_page.dart';
-import 'search_page.dart';
-
+import 'package:bazarshop/screens/search_page.dart';
+import 'package:bazarshop/screens/catalog_page.dart';
+import 'package:bazarshop/screens/auth_page.dart'; // Импортируем AuthPage
+import 'package:bazarshop/screens/cart_page.dart';
 
 class HomePage extends StatefulWidget {
+  final String jwtToken;  // параметр для получения jwtToken
+
+  HomePage({required this.jwtToken});  // обязательный параметр
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -72,7 +75,9 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => CatalogPage()),
+                          MaterialPageRoute(
+                            builder: (context) => CatalogPage(jwtToken: widget.jwtToken),  // Передаем jwtToken
+                          ),
                         );
                       },
                     ),
@@ -98,9 +103,10 @@ class _HomePageState extends State<HomePage> {
                         IconButton(
                           icon: Icon(Icons.person, color: Colors.black),
                           onPressed: () {
+                            // Навигация на AuthPage
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => AuthPage()),
+                              MaterialPageRoute(builder: (context) => AuthPage()), // Исправляем ошибку
                             );
                           },
                         ),
@@ -110,7 +116,7 @@ class _HomePageState extends State<HomePage> {
                             // Открыть корзину
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => CartPage()),
+                              MaterialPageRoute(builder: (context) => CartPage(jwtToken: widget.jwtToken)),
                             );
                           },
                         ),

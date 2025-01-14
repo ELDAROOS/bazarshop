@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 
 class CartPage extends StatelessWidget {
+  final String jwtToken;  // Параметр для получения jwtToken
+
+  // Добавляем конструктор с jwtToken
+  CartPage({required this.jwtToken});
+
   @override
   Widget build(BuildContext context) {
+    // Пример данных корзины, для демонстрации
+    List<String> cartItems = []; // Пустая корзина
+
     return Scaffold(
       backgroundColor: Colors.black, // Черный фон
       appBar: AppBar(
@@ -41,7 +49,8 @@ class CartPage extends StatelessWidget {
         child: Column(
           children: [
             // Проверка, пуста ли корзина
-            Expanded(
+            cartItems.isEmpty
+                ? Expanded(
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -65,18 +74,44 @@ class CartPage extends StatelessWidget {
                   ],
                 ),
               ),
+            )
+                : Expanded(
+              child: ListView.builder(
+                itemCount: cartItems.length,
+                itemBuilder: (context, index) {
+                  return CartItemWidget(item: cartItems[index]);
+                },
+              ),
             ),
-            // Если корзина не пуста, можно добавить товары
-            // Пример:
-            // Expanded(
-            //   child: ListView.builder(
-            //     itemCount: cartItems.length,
-            //     itemBuilder: (context, index) {
-            //       return CartItemWidget(item: cartItems[index]);
-            //     },
-            //   ),
-            // ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class CartItemWidget extends StatelessWidget {
+  final String item;  // Параметр для товара
+
+  CartItemWidget({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.white12,
+      margin: EdgeInsets.symmetric(vertical: 8),
+      child: ListTile(
+        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        leading: Icon(Icons.shopping_bag, color: Colors.white),
+        title: Text(
+          item,
+          style: TextStyle(color: Colors.white),
+        ),
+        trailing: IconButton(
+          icon: Icon(Icons.remove_circle_outline, color: Colors.red),
+          onPressed: () {
+            // Логика удаления товара
+          },
         ),
       ),
     );

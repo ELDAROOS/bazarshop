@@ -1,13 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:bazarshop/models/product.dart';
 
 class CatalogPage extends StatefulWidget {
+  final String jwtToken;  // Добавляем параметр для получения jwtToken
+
+  CatalogPage({required this.jwtToken});  // Обязательный параметр
+
   @override
   _CatalogPageState createState() => _CatalogPageState();
 }
 
 class _CatalogPageState extends State<CatalogPage> {
   String category = 'Женщины';
-  List<String> items = List.generate(10, (index) => 'Товар ${index + 1}');
+
+  // Метод для загрузки товаров с использованием jwtToken
+  Future<List<Product>> fetchProducts() async {
+    final url = Uri.parse('http://localhost:8080/api/product');
+
+    // Логируем отправляемый запрос
+    print("Отправка запроса на URL: $url");
+
+    // Отправляем запрос с токеном в заголовке
+    final response = await http.get(url, headers: {
+      'Authorization': 'Bearer ${widget.jwtToken}', // Используем токен для аутентификации
+    });
+
+    // Логируем ответ
+    print("Ответ от сервера: Статус код: ${response.statusCode}");
+    print("Тело ответа: ${response.body}");
+    
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((json) => Product.fromJson(json)).toList();
+    } else {
+      throw Exception('Не удалось загрузить товары');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,38 +156,50 @@ class _CatalogPageState extends State<CatalogPage> {
               ],
             ),
             SizedBox(height: 30),
-            // Анимация для списка товаров
+            // Загружаем список товаров с API
             Expanded(
-              child: AnimatedList(
-                initialItemCount: items.length,
-                itemBuilder: (context, index, animation) {
-                  return FadeTransition(
-                    opacity: animation,
-                    child: Card(
-                      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      elevation: 0,
-                      child: ListTile(
-                        contentPadding: EdgeInsets.all(16),
-                        title: Text(
-                          items[index],
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
+              child: FutureBuilder<List<Product>>(
+                future: fetchProducts(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Ошибка загрузки данных'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(child: Text('Нет товаров'));
+                  } else {
+                    final products = snapshot.data!;
+                    return ListView.builder(
+                      itemCount: products.length,
+                      itemBuilder: (context, index) {
+                        final product = products[index];
+                        return Card(
+                          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                        ),
-                        subtitle: Text('Описание товара ${index + 1}',
-                            style: TextStyle(fontSize: 14)),
-                        trailing: Icon(Icons.arrow_forward_ios, color: Colors.black),
-                        onTap: () {
-                          // Переход на страницу товара
-                        },
-                      ),
-                    ),
-                  );
+                          elevation: 0,
+                          child: ListTile(
+                            contentPadding: EdgeInsets.all(16),
+                            title: Text(
+                              product.name,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black,
+                              ),
+                            ),
+                            subtitle: Text(product.description,
+                                style: TextStyle(fontSize: 14)),
+                            trailing: Icon(Icons.arrow_forward_ios, color: Colors.black),
+                            onTap: () {
+                              // Переход на страницу товара
+                            },
+                          ),
+                        );
+                      },
+                    );
+                  }
                 },
               ),
             ),

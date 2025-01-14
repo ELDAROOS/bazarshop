@@ -6,9 +6,13 @@ environment:
 
 dependencies:
   flutter:
+
     sdk: flutter
   video_player: ^2.5.1
   font_awesome_flutter: ^10.0.0
+  http: ^1.2.2
+  shared_preferences: ^2.0.11
+  flutter_secure_storage: ^4.2.0
 
 flutter:
   assets:

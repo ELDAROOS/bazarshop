@@ -1,25 +1,32 @@
+// product.dart
 class Product {
-  final int productId;
-  final String productName;
-  final double productPrice;
+  final int code;
+  final String name;
   final String description;
-  final String image;
-  final String productSize;
-  final String productColor;
-  final int categoryId;
-  final String brand; // Новое поле для бренда
-  final double rating; // Новое поле для рейтинга
+  final double price;
+  final int quantity;
+  final String productStatus;
+  final String category;
 
   Product({
-    required this.productId,
-    required this.productName,
-    required this.productPrice,
+    required this.code,
+    required this.name,
     required this.description,
-    required this.image,
-    required this.productSize,
-    required this.productColor,
-    required this.categoryId,
-    required this.brand,
-    required this.rating,
+    required this.price,
+    required this.quantity,
+    required this.productStatus,
+    required this.category,
   });
+
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      code: json['code'],
+      name: json['name'],
+      description: json['description'],
+      price: json['price'].toDouble(),
+      quantity: json['quantity'],
+      productStatus: json['product_status'],
+      category: json['category']['name'], // Предположим, что категория передается как объект с полем name
+    );
+  }
 }

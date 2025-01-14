@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'home_page.dart'; // Импортируем вашу главную страницу
-import 'registration_page.dart';
-
+import 'package:bazarshop/screens/home_page.dart'; // Главная страница
+import 'package:bazarshop/screens/registration_page.dart';
 
 class AuthPage extends StatefulWidget {
   @override
@@ -30,18 +29,18 @@ class _AuthPageState extends State<AuthPage> {
         if (response.statusCode == 200) {
           // Успешная авторизация
           setState(() {
-            errorMessage = null; // Очистка сообщения об ошибке
+            errorMessage = null;
           });
 
           // Получаем JWT токен из ответа
           var responseData = jsonDecode(response.body);
-          String jwtToken = responseData['token']; // Предполагаем, что ответ содержит поле 'token'
+          String jwtToken = responseData['token'];
 
-          // Переход на главную страницу после успешного входа
+          // Переход на главную страницу
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => HomePage(jwtToken: jwtToken), // Передаем токен на главную страницу
+              builder: (context) => HomePage(jwtToken: jwtToken),
             ),
           );
         } else {
@@ -52,13 +51,11 @@ class _AuthPageState extends State<AuthPage> {
           });
         }
       } catch (e) {
-        // Ошибка соединения
         setState(() {
           errorMessage = 'Ошибка соединения с сервером: $e';
         });
       }
     } else {
-      // Поля не заполнены
       setState(() {
         errorMessage = 'Заполните все поля.';
       });
@@ -73,7 +70,7 @@ class _AuthPageState extends State<AuthPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context); // Возвращаемся назад
+            Navigator.pop(context);
           },
         ),
         title: Text(
@@ -93,14 +90,9 @@ class _AuthPageState extends State<AuthPage> {
           children: [
             Text(
               'ВОЙДИТЕ В СВОЮ УЧЕТНУЮ ЗАПИСЬ',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
             ),
             SizedBox(height: 40),
-
             TextField(
               controller: emailController,
               style: TextStyle(color: Colors.white),
@@ -110,16 +102,9 @@ class _AuthPageState extends State<AuthPage> {
                 border: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.white),
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
-                ),
               ),
             ),
             SizedBox(height: 20),
-
             TextField(
               controller: passwordController,
               obscureText: true,
@@ -130,35 +115,20 @@ class _AuthPageState extends State<AuthPage> {
                 border: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.white),
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
-                ),
               ),
             ),
             SizedBox(height: 20),
-
             if (errorMessage != null)
               Text(
                 errorMessage!,
-                style: TextStyle(
-                  color: Colors.red,
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: Colors.red, fontSize: 14),
               ),
             SizedBox(height: 10),
-
             ElevatedButton(
               onPressed: signIn,
               child: Text(
                 'Начать сейчас',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
@@ -169,21 +139,16 @@ class _AuthPageState extends State<AuthPage> {
               ),
             ),
             SizedBox(height: 30),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   'НУЖНА УЧЕТНАЯ ЗАПИСЬ?',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Colors.white, fontSize: 14),
                 ),
               ],
             ),
             SizedBox(height: 10),
-
             TextButton(
               onPressed: () {
                 Navigator.push(
@@ -193,11 +158,7 @@ class _AuthPageState extends State<AuthPage> {
               },
               child: Text(
                 'Зарегистрироваться',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
           ],
