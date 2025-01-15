@@ -116,7 +116,7 @@ class _SearchPageState extends State<SearchPage> {
                             product: product,
                             email: widget.email,  // Передаем email
                             jwtToken: widget.jwtToken,  // Передаем jwtToken
-                          ),
+                          ),//j
                         ),
                       );
 
