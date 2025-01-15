@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:bazarshop/models/product.dart';
+import 'package:bazarshop/screens/product_details_screen.dart'; // Импортируем экран с деталями товара
 
 class CatalogPage extends StatefulWidget {
   final String jwtToken;  // Добавляем параметр для получения jwtToken
+  final String email; // Добавляем параметр для передачи email
 
-  CatalogPage({required this.jwtToken});  // Обязательный параметр
+  CatalogPage({required this.jwtToken, required this.email});  // Обязательные параметры
 
   @override
   _CatalogPageState createState() => _CatalogPageState();
@@ -17,36 +19,41 @@ class _CatalogPageState extends State<CatalogPage> {
 
   // Метод для загрузки товаров с использованием jwtToken
   Future<List<Product>> fetchProducts() async {
-    final url = Uri.parse('http://localhost:8080/api/product');
+    try {
+      final url = Uri.parse('http://localhost:8080/api/product');
+      print("Отправка запроса на URL: $url");
 
-    // Логируем отправляемый запрос
-    print("Отправка запроса на URL: $url");
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer ${widget.jwtToken}', // JWT-токен
+      });
 
-    // Отправляем запрос с токеном в заголовке
-    final response = await http.get(url, headers: {
-      'Authorization': 'Bearer ${widget.jwtToken}', // Используем токен для аутентификации
-    });
+      print("Ответ от сервера: ${response.statusCode}");
+      print("Тело ответа: ${response.body}");
 
-    // Логируем ответ
-    print("Ответ от сервера: Статус код: ${response.statusCode}");
-    print("Тело ответа: ${response.body}");
-    
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        print("Парсинг JSON успешен: $data");
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.map((json) => Product.fromJson(json)).toList();
-    } else {
-      throw Exception('Не удалось загрузить товары');
+        return data.map((json) {
+          // Преобразуем JSON в объект Product с учётом возможного null
+          return Product.fromJson(json ?? {});
+        }).toList();
+      } else {
+        throw Exception('HTTP ошибка: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("Ошибка в fetchProducts: $e");
+      throw Exception('Ошибка загрузки данных: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -54,23 +61,23 @@ class _CatalogPageState extends State<CatalogPage> {
         title: Text(
           'Каталог',
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.black,
             fontWeight: FontWeight.bold,
             fontSize: 22,
           ),
         ),
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: Icon(Icons.search, color: Colors.white),
+            icon: Icon(Icons.search, color: Colors.black),
             onPressed: () {},
           ),
           IconButton(
-            icon: Icon(Icons.account_circle, color: Colors.white),
+            icon: Icon(Icons.account_circle, color: Colors.black),
             onPressed: () {},
           ),
           IconButton(
-            icon: Icon(Icons.shopping_cart, color: Colors.white),
+            icon: Icon(Icons.shopping_cart, color: Colors.black),
             onPressed: () {},
           ),
         ],
@@ -192,8 +199,48 @@ class _CatalogPageState extends State<CatalogPage> {
                             subtitle: Text(product.description,
                                 style: TextStyle(fontSize: 14)),
                             trailing: Icon(Icons.arrow_forward_ios, color: Colors.black),
-                            onTap: () {
-                              // Переход на страницу товара
+                            onTap: () async {
+                              try {
+                                // Динамическое формирование URL для каждого товара
+                                final url = Uri.parse('http://localhost:8080/api/product/${product.id}');
+
+                                // Принт в консоль: показываем URL, по которому отправляется запрос
+                                print("Отправляем запрос на URL: $url");
+
+                                // Отправка GET запроса с динамически сформированным URL
+                                final response = await http.get(
+                                  url,
+                                  headers: {
+                                    'Authorization': 'Bearer ${widget.jwtToken}',  // JWT-токен
+                                  },
+                                );
+
+                                // Принт в консоль: показываем статус ответа от сервера
+                                print("Ответ от сервера: ${response.statusCode}");
+                                print("Тело ответа: ${response.body}");
+
+                                if (response.statusCode == 200) {
+                                  final productDetails = json.decode(response.body);
+
+                                  // Переход на экран с деталями товара, передав данные о товаре и email
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ProductDetailsScreen(
+                                        product: Product.fromJson(productDetails),
+                                        email: widget.email,  // Передаем email
+                                        jwtToken: widget.jwtToken,  // Передаем jwtToken
+                                      ),
+                                    ),
+                                  );
+
+                                } else {
+                                  // Обработка ошибки, если GET запрос не успешен
+                                  print('Ошибка загрузки данных: ${response.statusCode}');
+                                }
+                              } catch (e) {
+                                print('Ошибка при запросе данных о товаре: $e');
+                              }
                             },
                           ),
                         );

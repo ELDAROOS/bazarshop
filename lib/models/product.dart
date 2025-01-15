@@ -1,6 +1,6 @@
-// product.dart
 class Product {
   final int code;
+  final int id;
   final String name;
   final String description;
   final double price;
@@ -10,6 +10,7 @@ class Product {
 
   Product({
     required this.code,
+    required this.id,
     required this.name,
     required this.description,
     required this.price,
@@ -19,14 +20,23 @@ class Product {
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
-    return Product(
-      code: json['code'],
-      name: json['name'],
-      description: json['description'],
-      price: json['price'].toDouble(),
-      quantity: json['quantity'],
-      productStatus: json['product_status'],
-      category: json['category']['name'], // Предположим, что категория передается как объект с полем name
-    );
+    try {
+      return Product(
+        id: json['id'] as int,
+        code: json['code'] as int,
+        name: json['name'] as String,
+        description: json['description'] as String? ?? '',
+        price: (json['price'] as num).toDouble(),
+        quantity: json['quantity'] as int,
+        productStatus: json['productStatus'] as String? ?? 'UNKNOWN',
+        category: json['category'] is String
+            ? json['category'] as String
+            : (json['category'] as Map<String, dynamic>)['name'] as String? ?? 'Uncategorized',
+      );
+    } catch (e) {
+      print('Ошибка при парсинге продукта: $e');
+      throw Exception('Ошибка парсинга данных продукта');
+    }
   }
+
 }

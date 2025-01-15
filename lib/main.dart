@@ -10,10 +10,13 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Пока что передаем "dummy_token" или реальный токен после успешной аутентификации
+    // Пока что передаем "dummy_token" и "dummy_email"
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage(jwtToken: 'dummy_token'), // передаем заглушку для jwtToken
+      home: HomePage(
+        jwtToken: 'dummy_token',  // передаем заглушку для jwtToken
+        email: 'dummy_email',     // передаем заглушку для email
+      ),
     );
   }
 }

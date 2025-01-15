@@ -1,46 +1,82 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
-class CartPage extends StatelessWidget {
-  final String jwtToken;  // Параметр для получения jwtToken
+class CartPage extends StatefulWidget {
+  final String jwtToken;
 
-  // Добавляем конструктор с jwtToken
   CartPage({required this.jwtToken});
 
   @override
-  Widget build(BuildContext context) {
-    // Пример данных корзины, для демонстрации
-    List<String> cartItems = []; // Пустая корзина
+  _CartPageState createState() => _CartPageState();
+}
 
+class _CartPageState extends State<CartPage> {
+  List<String> cartItems = [];
+
+  Future<void> fetchCartItems() async {
+    final decodedToken = JwtDecoder.decode(widget.jwtToken);
+    final email = decodedToken['email'];
+
+    final url = Uri.parse('http://localhost:8080/api/cart?email=$email');
+
+    print('Отправка GET-запроса по адресу: $url');
+
+    try {
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer ${widget.jwtToken}',
+      });
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        final List<dynamic> cartItemsFromResponse = data['cartItems'];
+
+        setState(() {
+          cartItems = List<String>.from(cartItemsFromResponse.map((item) => item.toString()));
+        });
+      } else {
+        throw Exception('Не удалось загрузить данные корзины');
+      }
+    } catch (e) {
+      print('Ошибка при загрузке корзины: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCartItems();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Черный фон
+      backgroundColor: Colors.white, // Белый фон
       appBar: AppBar(
-        backgroundColor: Colors.black, // Черный цвет AppBar
+        backgroundColor: Colors.white, // Белый фон AppBar
         title: Text(
           'Корзина',
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.black, // Черный текст заголовка
             fontWeight: FontWeight.bold,
             fontSize: 22,
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context); // Возвращаемся назад
+            Navigator.pop(context);
           },
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.search, color: Colors.white),
-            onPressed: () {
-              // Логика для открытия поисковика
-            },
+            icon: Icon(Icons.search, color: Colors.black),
+            onPressed: () {},
           ),
           IconButton(
-            icon: Icon(Icons.person, color: Colors.white),
-            onPressed: () {
-              // Логика для открытия профиля
-            },
+            icon: Icon(Icons.person, color: Colors.black),
+            onPressed: () {},
           ),
         ],
       ),
@@ -48,7 +84,6 @@ class CartPage extends StatelessWidget {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            // Проверка, пуста ли корзина
             cartItems.isEmpty
                 ? Expanded(
               child: Center(
@@ -60,7 +95,7 @@ class CartPage extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: Colors.black, // Черный текст
                       ),
                     ),
                     SizedBox(height: 10),
@@ -68,7 +103,7 @@ class CartPage extends StatelessWidget {
                       'Добавленная одежда будет отображаться тут',
                       style: TextStyle(
                         fontSize: 16,
-                        color: Colors.white70,
+                        color: Colors.black54, // Темный серый текст
                       ),
                     ),
                   ],
@@ -91,21 +126,21 @@ class CartPage extends StatelessWidget {
 }
 
 class CartItemWidget extends StatelessWidget {
-  final String item;  // Параметр для товара
+  final String item;
 
   CartItemWidget({required this.item});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.white12,
+      color: Colors.white, // Белый фон карточки
       margin: EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        leading: Icon(Icons.shopping_bag, color: Colors.white),
+        leading: Icon(Icons.shopping_bag, color: Colors.black), // Черный значок
         title: Text(
           item,
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.black), // Черный текст
         ),
         trailing: IconButton(
           icon: Icon(Icons.remove_circle_outline, color: Colors.red),

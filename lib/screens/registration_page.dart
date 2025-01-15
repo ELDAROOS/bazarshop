@@ -11,10 +11,10 @@ class RegistrationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Черный фон
+      backgroundColor: Colors.white, // Белый фон
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: Colors.black), // Черная иконка
           onPressed: () {
             Navigator.pop(context); // Возвращаемся назад
           },
@@ -22,15 +22,16 @@ class RegistrationPage extends StatelessWidget {
         title: Text(
           'Регистрация',
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.black, // Черный текст заголовка
             fontWeight: FontWeight.bold,
             fontSize: 22,
           ),
         ),
-        backgroundColor: Colors.black, // Черный цвет AppBar
+        backgroundColor: Colors.white, // Белый фон AppBar
+        elevation: 0, // Убираем тень
         actions: [
           IconButton(
-            icon: Icon(Icons.shopping_cart, color: Colors.white),
+            icon: Icon(Icons.shopping_cart, color: Colors.black), // Черная иконка
             onPressed: () {},
           ),
         ],
@@ -46,7 +47,7 @@ class RegistrationPage extends StatelessWidget {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.white, // Белый цвет текста
+                color: Colors.black, // Черный текст
               ),
             ),
             SizedBox(height: 40),
@@ -54,18 +55,16 @@ class RegistrationPage extends StatelessWidget {
             // Поле для ввода имени пользователя
             TextField(
               controller: usernameController,
-              style: TextStyle(color: Colors.white), // Белый цвет текста в поле
+              style: TextStyle(color: Colors.black), // Черный текст в поле
               decoration: InputDecoration(
                 labelText: 'Имя пользователя',
-                labelStyle: TextStyle(color: Colors.white), // Белый цвет текста
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white), // Белая граница
-                ),
+                labelStyle: TextStyle(color: Colors.black), // Черный текст
+                border: OutlineInputBorder(),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white), // Белая граница
+                  borderSide: BorderSide(color: Colors.grey), // Серый цвет границы
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white), // Белая граница
+                  borderSide: BorderSide(color: Colors.black), // Черный цвет границы
                 ),
               ),
             ),
@@ -74,18 +73,16 @@ class RegistrationPage extends StatelessWidget {
             // Поле для ввода электронной почты
             TextField(
               controller: emailController,
-              style: TextStyle(color: Colors.white), // Белый цвет текста в поле
+              style: TextStyle(color: Colors.black), // Черный текст в поле
               decoration: InputDecoration(
                 labelText: 'Электронная почта',
-                labelStyle: TextStyle(color: Colors.white), // Белый цвет текста
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white), // Белая граница
-                ),
+                labelStyle: TextStyle(color: Colors.black), // Черный текст
+                border: OutlineInputBorder(),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white), // Белая граница
+                  borderSide: BorderSide(color: Colors.grey), // Серый цвет границы
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white), // Белая граница
+                  borderSide: BorderSide(color: Colors.black), // Черный цвет границы
                 ),
               ),
             ),
@@ -95,25 +92,22 @@ class RegistrationPage extends StatelessWidget {
             TextField(
               controller: passwordController,
               obscureText: true,
-              style: TextStyle(color: Colors.white), // Белый цвет текста в поле
+              style: TextStyle(color: Colors.black), // Черный текст в поле
               decoration: InputDecoration(
                 labelText: 'Пароль',
-                labelStyle: TextStyle(color: Colors.white), // Белый цвет текста
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white), // Белая граница
-                ),
+                labelStyle: TextStyle(color: Colors.black), // Черный текст
+                border: OutlineInputBorder(),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white), // Белая граница
+                  borderSide: BorderSide(color: Colors.grey), // Серый цвет границы
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white), // Белая граница
+                  borderSide: BorderSide(color: Colors.black), // Черный цвет границы
                 ),
               ),
             ),
             SizedBox(height: 30),
 
             // Кнопка "Создать учетную запись"
-// Кнопка "Создать учетную запись"
             ElevatedButton(
               onPressed: () async {
                 String email = emailController.text;
@@ -206,18 +200,17 @@ class RegistrationPage extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black, // Черный текст на кнопке
+                  color: Colors.white, // Белый текст на кнопке
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white, // Белая кнопка
+                backgroundColor: Colors.black, // Черная кнопка
                 minimumSize: Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
               ),
             ),
-
           ],
         ),
       ),

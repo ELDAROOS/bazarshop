@@ -1,22 +1,31 @@
-name: bazarshop # Замените на название вашего проекта
+name: bazarshop # Название вашего проекта
 description: A new Flutter project. # Краткое описание проекта
 
 environment:
-  sdk: ">=3.6.0 <4.0.0"
+  sdk: ">=3.6.0 <4.0.0" # Убедитесь, что используете подходящую версию SDK
 
 dependencies:
   flutter:
-
     sdk: flutter
-  video_player: ^2.5.1
-  font_awesome_flutter: ^10.0.0
-  http: ^1.2.2
-  shared_preferences: ^2.0.11
-  flutter_secure_storage: ^4.2.0
+  video_player: ^2.5.1 # Для воспроизведения видео
+  font_awesome_flutter: ^10.0.0 # Для работы с Font Awesome Icons
+  http: ^1.2.2 # Для HTTP-запросов
+  shared_preferences: ^2.0.11 # Для сохранения данных локально
+  flutter_secure_storage: ^4.2.0 # Для безопасного хранения данных
+  jwt_decoder: ^2.0.1 # Для работы с JWT токенами
 
 flutter:
   assets:
-    - assets/videoplayback.mp4
+    - assets/videoplayback.mp4 # Добавляем видеофайл
+
+  fonts:
+    - family: Harper's Bazaar
+      fonts:
+        - asset: assets/fonts/Didot-Regular.ttf # Убедитесь, что файл шрифта находится в указанной папке
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+# Обязательно добавьте следующий код в web/index.html
+# <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">

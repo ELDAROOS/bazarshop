@@ -36,11 +36,14 @@ class _AuthPageState extends State<AuthPage> {
           var responseData = jsonDecode(response.body);
           String jwtToken = responseData['token'];
 
-          // Переход на главную страницу
+          // Переход на главную страницу с передачей jwtToken и email
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => HomePage(jwtToken: jwtToken),
+              builder: (context) => HomePage(
+                jwtToken: jwtToken,   // Передаем jwtToken
+                email: email,          // Передаем email
+              ),
             ),
           );
         } else {

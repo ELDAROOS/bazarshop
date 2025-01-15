@@ -7,8 +7,9 @@ import 'package:bazarshop/screens/cart_page.dart';
 
 class HomePage extends StatefulWidget {
   final String jwtToken;  // параметр для получения jwtToken
+  final String email;     // параметр для получения email
 
-  HomePage({required this.jwtToken});  // обязательный параметр
+  HomePage({required this.jwtToken, required this.email});  // обязательные параметры
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -38,7 +39,11 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SearchPage(query: query),
+        builder: (context) => SearchPage(
+          query: query,
+          jwtToken: widget.jwtToken,  // Передаем jwtToken
+          email: widget.email,        // Передаем email
+        ),
       ),
     );
   }
@@ -76,17 +81,20 @@ class _HomePageState extends State<HomePage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CatalogPage(jwtToken: widget.jwtToken),  // Передаем jwtToken
+                            builder: (context) => CatalogPage(
+                              jwtToken: widget.jwtToken,  // Передаем jwtToken
+                              email: widget.email,        // Передаем email
+                            ),
                           ),
                         );
                       },
                     ),
                     // Название BAZAR
                     Text(
-                      "BAZAR",
+                      "Urban Couture",
                       style: TextStyle(
                         fontFamily: "Harper's Bazaar", // Укажи шрифт
-                        color: Colors.white,
+                        color: Colors.black,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
@@ -97,7 +105,7 @@ class _HomePageState extends State<HomePage> {
                         IconButton(
                           icon: Icon(Icons.search, color: Colors.white),
                           onPressed: () {
-                            navigateToSearch("");
+                            navigateToSearch("");  // Навигация на страницу поиска
                           },
                         ),
                         IconButton(
@@ -106,7 +114,9 @@ class _HomePageState extends State<HomePage> {
                             // Навигация на AuthPage
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => AuthPage()), // Исправляем ошибку
+                              MaterialPageRoute(
+                                builder: (context) => AuthPage(), // Исправляем ошибку
+                              ),
                             );
                           },
                         ),
@@ -116,7 +126,11 @@ class _HomePageState extends State<HomePage> {
                             // Открыть корзину
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => CartPage(jwtToken: widget.jwtToken)),
+                              MaterialPageRoute(
+                                builder: (context) => CartPage(
+                                  jwtToken: widget.jwtToken, // Передаем jwtToken
+                                ),
+                              ),
                             );
                           },
                         ),
