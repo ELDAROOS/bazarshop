@@ -3,12 +3,16 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:bazarshop/models/product.dart';
 import 'package:bazarshop/screens/product_details_screen.dart'; // Импортируем экран с деталями товара
+import 'package:bazarshop/screens/search_page.dart'; // Экран поиска
+import 'package:bazarshop/screens/profile_page.dart'; // Экран профиля
+import 'cart_page.dart';
+import 'search_page.dart';
 
 class CatalogPage extends StatefulWidget {
-  final String jwtToken;  // Добавляем параметр для получения jwtToken
-  final String email; // Добавляем параметр для передачи email
+  final String jwtToken;
+  final String email;
 
-  CatalogPage({required this.jwtToken, required this.email});  // Обязательные параметры
+  CatalogPage({required this.jwtToken, required this.email});
 
   @override
   _CatalogPageState createState() => _CatalogPageState();
@@ -16,6 +20,7 @@ class CatalogPage extends StatefulWidget {
 
 class _CatalogPageState extends State<CatalogPage> {
   String category = 'Женщины';
+  int _selectedIndex = 0; // Переменная для отслеживания текущего индекса выбранной кнопки
 
   // Метод для загрузки товаров с использованием jwtToken
   Future<List<Product>> fetchProducts() async {
@@ -35,7 +40,6 @@ class _CatalogPageState extends State<CatalogPage> {
         print("Парсинг JSON успешен: $data");
 
         return data.map((json) {
-          // Преобразуем JSON в объект Product с учётом возможного null
           return Product.fromJson(json ?? {});
         }).toList();
       } else {
@@ -47,13 +51,39 @@ class _CatalogPageState extends State<CatalogPage> {
     }
   }
 
+  // Функция для обработки нажатий на кнопки нижнего HUD-бара
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    if (index == 0) {
+      // Переход на страницу поиска
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => SearchPage(jwtToken: widget.jwtToken, email: widget.email, query: '',)),
+      );
+    } else if (index == 1) {
+      // Переход на страницу профиля
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ProfilePage(jwtToken: widget.jwtToken, email: widget.email, name: '',)),
+      );
+    } else if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => CartPage(jwtToken: widget.jwtToken)),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: Image.asset('assets/icons/back.png', width: 24, height: 24),  // Указываем путь к иконке и её размер
           onPressed: () {
             Navigator.pop(context);
           },
@@ -67,20 +97,7 @@ class _CatalogPageState extends State<CatalogPage> {
           ),
         ),
         backgroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.search, color: Colors.black),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(Icons.account_circle, color: Colors.black),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(Icons.shopping_cart, color: Colors.black),
-            onPressed: () {},
-          ),
-        ],
+        elevation: 1,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -90,7 +107,6 @@ class _CatalogPageState extends State<CatalogPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Кнопка "Женщины"
                 AnimatedContainer(
                   duration: Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
@@ -105,18 +121,18 @@ class _CatalogPageState extends State<CatalogPage> {
                     child: Text(
                       'Женщины',
                       style: TextStyle(
-                        color: category == 'Женщины' ? Colors.white : Colors.black,
+                        color: category == 'Женщины' ? Colors.black : Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: category == 'Женщины'
-                          ? Colors.black
-                          : Colors.white,
+                          ? Colors.white
+                          : Colors.black,
                       side: BorderSide(
                         color: category == 'Женщины'
-                            ? Colors.black
+                            ? Colors.white
                             : Colors.white.withOpacity(0.2),
                       ),
                       padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
@@ -125,7 +141,6 @@ class _CatalogPageState extends State<CatalogPage> {
                     ),
                   ),
                 ),
-                // Кнопка "Мужчины"
                 AnimatedContainer(
                   duration: Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
@@ -140,19 +155,19 @@ class _CatalogPageState extends State<CatalogPage> {
                     child: Text(
                       'Мужчины',
                       style: TextStyle(
-                        color: category == 'Мужчины' ? Colors.white : Colors.black,
+                        color: category == 'Мужчины' ? Colors.black : Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: category == 'Мужчины'
-                          ? Colors.black
-                          : Colors.white,
+                          ? Colors.white
+                          : Colors.black,
                       side: BorderSide(
                         color: category == 'Мужчины'
-                            ? Colors.black
-                            : Colors.white.withOpacity(0.2),
+                            ? Colors.white
+                            : Colors.black.withOpacity(0.2),
                       ),
                       padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                       shape: RoundedRectangleBorder(
@@ -163,7 +178,6 @@ class _CatalogPageState extends State<CatalogPage> {
               ],
             ),
             SizedBox(height: 30),
-            // Загружаем список товаров с API
             Expanded(
               child: FutureBuilder<List<Product>>(
                 future: fetchProducts(),
@@ -171,7 +185,7 @@ class _CatalogPageState extends State<CatalogPage> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
-                    return Center(child: Text('Ошибка загрузки данных'));
+                    return Center(child: Text('Ошибка загрузки данных: ${snapshot.error}'));
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return Center(child: Text('Нет товаров'));
                   } else {
@@ -185,7 +199,7 @@ class _CatalogPageState extends State<CatalogPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          elevation: 0,
+                          elevation: 2,
                           child: ListTile(
                             contentPadding: EdgeInsets.all(16),
                             title: Text(
@@ -193,49 +207,34 @@ class _CatalogPageState extends State<CatalogPage> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
-                                color: Colors.black,
+                                color: Colors.white,
                               ),
                             ),
-                            subtitle: Text(product.description,
-                                style: TextStyle(fontSize: 14)),
+                            subtitle: Text(
+                              product.description,
+                              style: TextStyle(fontSize: 14, color: Colors.black54),
+                            ),
                             trailing: Icon(Icons.arrow_forward_ios, color: Colors.black),
                             onTap: () async {
                               try {
-                                // Динамическое формирование URL для каждого товара
                                 final url = Uri.parse('http://localhost:8080/api/product/${product.id}');
-
-                                // Принт в консоль: показываем URL, по которому отправляется запрос
-                                print("Отправляем запрос на URL: $url");
-
-                                // Отправка GET запроса с динамически сформированным URL
-                                final response = await http.get(
-                                  url,
-                                  headers: {
-                                    'Authorization': 'Bearer ${widget.jwtToken}',  // JWT-токен
-                                  },
-                                );
-
-                                // Принт в консоль: показываем статус ответа от сервера
-                                print("Ответ от сервера: ${response.statusCode}");
-                                print("Тело ответа: ${response.body}");
+                                final response = await http.get(url, headers: {
+                                  'Authorization': 'Bearer ${widget.jwtToken}',
+                                });
 
                                 if (response.statusCode == 200) {
                                   final productDetails = json.decode(response.body);
-
-                                  // Переход на экран с деталями товара, передав данные о товаре и email
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => ProductDetailsScreen(
                                         product: Product.fromJson(productDetails),
-                                        email: widget.email,  // Передаем email
-                                        jwtToken: widget.jwtToken,  // Передаем jwtToken
+                                        email: widget.email,
+                                        jwtToken: widget.jwtToken,
                                       ),
                                     ),
                                   );
-
                                 } else {
-                                  // Обработка ошибки, если GET запрос не успешен
                                   print('Ошибка загрузки данных: ${response.statusCode}');
                                 }
                               } catch (e) {
@@ -252,6 +251,24 @@ class _CatalogPageState extends State<CatalogPage> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: [
+          BottomNavigationBarItem(
+            icon: Image.asset('assets/icons/search.png', width: 24, height: 24),
+            label: 'Поиск',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset('assets/icons/profile.png', width: 24, height: 24),
+            label: 'Профиль',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset('assets/icons/cart.png', width: 24, height: 24),
+            label: 'Корзина',
+          ),
+        ],
       ),
     );
   }

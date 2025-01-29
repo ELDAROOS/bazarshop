@@ -11,12 +11,26 @@ dependencies:
   font_awesome_flutter: ^10.0.0 # Для работы с Font Awesome Icons
   http: ^1.2.2 # Для HTTP-запросов
   shared_preferences: ^2.0.11 # Для сохранения данных локально
-  flutter_secure_storage: ^4.2.0 # Для безопасного хранения данных
+  flutter_secure_storage: ^9.0.0 # Для безопасного хранения данных
   jwt_decoder: ^2.0.1 # Для работы с JWT токенами
+  carousel_slider: ^5.0.0
 
 flutter:
   assets:
-    - assets/videoplayback.mp4 # Добавляем видеофайл
+    - assets/image1.jpg
+    - assets/image2.jpg
+    - assets/image3.jpg
+    - assets/image4.jpg
+    - assets/image5.jpg
+    - assets/icons/cart.png
+    - assets/icons/catalog.png
+    - assets/icons/profile.png
+    - assets/icons/search.png
+    - assets/icons/back.png
+
+
+
+
 
   fonts:
     - family: Harper's Bazaar

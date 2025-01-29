@@ -13,7 +13,7 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  List<String> cartItems = [];
+  List<Map<String, dynamic>> cartItems = [];
 
   Future<void> fetchCartItems() async {
     final decodedToken = JwtDecoder.decode(widget.jwtToken);
@@ -28,19 +28,40 @@ class _CartPageState extends State<CartPage> {
         'Authorization': 'Bearer ${widget.jwtToken}',
       });
 
+      print('Ответ от сервера - Статус: ${response.statusCode}');
+      print('Ответ от сервера - Тело: ${response.body}');
+
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
-        final List<dynamic> cartItemsFromResponse = data['cartItems'];
 
-        setState(() {
-          cartItems = List<String>.from(cartItemsFromResponse.map((item) => item.toString()));
-        });
+        print('Ответ от сервера (успешно): $data');
+
+        if (data.containsKey('items') && data['items'] != null && data['items'] is List) {
+          final List<dynamic> cartItemsFromResponse = data['items'];
+
+          setState(() {
+            cartItems = List<Map<String, dynamic>>.from(
+              cartItemsFromResponse.map((item) => item as Map<String, dynamic>),
+            );
+          });
+        } else {
+          print('Ошибка: items не найдено или не является списком');
+        }
       } else {
+        print('Ошибка от сервера: ${response.body}');
         throw Exception('Не удалось загрузить данные корзины');
       }
     } catch (e) {
       print('Ошибка при загрузке корзины: $e');
     }
+  }
+
+  double calculateTotal() {
+    double total = 0.0;
+    for (var item in cartItems) {
+      total += item['price'] ?? 0.0;  // Если цена товара есть, добавляем ее к общей сумме
+    }
+    return total;
   }
 
   @override
@@ -52,30 +73,30 @@ class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Белый фон
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white, // Белый фон AppBar
+        backgroundColor: Colors.white,
         title: Text(
           'Корзина',
           style: TextStyle(
-            color: Colors.black, // Черный текст заголовка
+            color: Colors.black,
             fontWeight: FontWeight.bold,
             fontSize: 22,
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: Image.asset('assets/icons/back.png', width: 24, height: 24),  // Указываем путь к иконке и её размер
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.search, color: Colors.black),
+            icon: Image.asset('assets/icons/search.png', width: 24, height: 24),
             onPressed: () {},
           ),
           IconButton(
-            icon: Icon(Icons.person, color: Colors.black),
+            icon: Image.asset('assets/icons/profile.png', width: 24, height: 24),
             onPressed: () {},
           ),
         ],
@@ -95,7 +116,7 @@ class _CartPageState extends State<CartPage> {
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black, // Черный текст
+                        color: Colors.black,
                       ),
                     ),
                     SizedBox(height: 10),
@@ -103,7 +124,7 @@ class _CartPageState extends State<CartPage> {
                       'Добавленная одежда будет отображаться тут',
                       style: TextStyle(
                         fontSize: 16,
-                        color: Colors.black54, // Темный серый текст
+                        color: Colors.grey,
                       ),
                     ),
                   ],
@@ -114,10 +135,37 @@ class _CartPageState extends State<CartPage> {
               child: ListView.builder(
                 itemCount: cartItems.length,
                 itemBuilder: (context, index) {
-                  return CartItemWidget(item: cartItems[index]);
+                  final item = cartItems[index];
+                  return CartItemWidget(item: item);
                 },
               ),
             ),
+            // Итоговая сумма
+            if (cartItems.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Итог: ',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Text(
+                      '${calculateTotal().toStringAsFixed(2)} ₽',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),
@@ -126,21 +174,36 @@ class _CartPageState extends State<CartPage> {
 }
 
 class CartItemWidget extends StatelessWidget {
-  final String item;
+  final Map<String, dynamic> item;
 
   CartItemWidget({required this.item});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.white, // Белый фон карточки
+      color: Colors.white,
       margin: EdgeInsets.symmetric(vertical: 8),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        leading: Icon(Icons.shopping_bag, color: Colors.black), // Черный значок
+        leading: item['image'] != null
+            ? Image.network(
+          item['image'],
+          width: 50,
+          height: 50,
+          fit: BoxFit.cover,
+        )
+            : Icon(Icons.shopping_bag, color: Colors.black),
         title: Text(
-          item,
-          style: TextStyle(color: Colors.black), // Черный текст
+          item['name'] ?? 'Товар',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text(
+          '${item['price']} ₽',
+          style: TextStyle(color: Colors.grey),
         ),
         trailing: IconButton(
           icon: Icon(Icons.remove_circle_outline, color: Colors.red),

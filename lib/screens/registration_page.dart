@@ -8,105 +8,69 @@ class RegistrationPage extends StatelessWidget {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
 
+  // Метод для отображения диалоговых окон
+  void _showDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('ОК'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Белый фон
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black), // Черная иконка
+          icon: Image.asset('assets/icons/back.png', width: 24, height: 24),  // Указываем путь к иконке и её размер
           onPressed: () {
-            Navigator.pop(context); // Возвращаемся назад
+            Navigator.pop(context);
           },
         ),
+
         title: Text(
           'Регистрация',
           style: TextStyle(
-            color: Colors.black, // Черный текст заголовка
+            color: Colors.black,
             fontWeight: FontWeight.bold,
             fontSize: 22,
           ),
         ),
-        backgroundColor: Colors.white, // Белый фон AppBar
-        elevation: 0, // Убираем тень
-        actions: [
-          IconButton(
-            icon: Icon(Icons.shopping_cart, color: Colors.black), // Черная иконка
-            onPressed: () {},
-          ),
-        ],
+        backgroundColor: Colors.white,
+        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Заголовок
             Text(
               'ЛИЧНЫЕ ДАННЫЕ',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.black, // Черный текст
+                color: Colors.black,
               ),
             ),
             SizedBox(height: 40),
-
             // Поле для ввода имени пользователя
-            TextField(
-              controller: usernameController,
-              style: TextStyle(color: Colors.black), // Черный текст в поле
-              decoration: InputDecoration(
-                labelText: 'Имя пользователя',
-                labelStyle: TextStyle(color: Colors.black), // Черный текст
-                border: OutlineInputBorder(),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey), // Серый цвет границы
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black), // Черный цвет границы
-                ),
-              ),
-            ),
+            _buildTextField(usernameController, 'Имя пользователя'),
             SizedBox(height: 20),
-
             // Поле для ввода электронной почты
-            TextField(
-              controller: emailController,
-              style: TextStyle(color: Colors.black), // Черный текст в поле
-              decoration: InputDecoration(
-                labelText: 'Электронная почта',
-                labelStyle: TextStyle(color: Colors.black), // Черный текст
-                border: OutlineInputBorder(),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey), // Серый цвет границы
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black), // Черный цвет границы
-                ),
-              ),
-            ),
+            _buildTextField(emailController, 'Электронная почта'),
             SizedBox(height: 20),
-
             // Поле для ввода пароля
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              style: TextStyle(color: Colors.black), // Черный текст в поле
-              decoration: InputDecoration(
-                labelText: 'Пароль',
-                labelStyle: TextStyle(color: Colors.black), // Черный текст
-                border: OutlineInputBorder(),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey), // Серый цвет границы
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black), // Черный цвет границы
-                ),
-              ),
-            ),
+            _buildTextField(passwordController, 'Пароль', obscureText: true),
             SizedBox(height: 30),
-
             // Кнопка "Создать учетную запись"
             ElevatedButton(
               onPressed: () async {
@@ -128,70 +92,35 @@ class RegistrationPage extends StatelessWidget {
                     );
 
                     if (response.statusCode == 200) {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: Text('Успешно'),
-                          content: Text('Регистрация прошла успешно, сейчас перенаправим на страницу входа'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text('ОК'),
-                            ),
-                          ],
-                        ),
+                      _showDialog(
+                        context,
+                        'Успешно',
+                        'Регистрация прошла успешно, сейчас перенаправим на страницу входа',
                       );
-                      // Успешная регистрация - переходим на auth_page
+                      // Переход на страницу авторизации
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => AuthPage()),
                       );
                     } else {
-                      // Ошибка регистрации
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: Text('Ошибка'),
-                          content: Text('Не удалось зарегистрироваться. Попробуйте ещё раз.'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text('ОК'),
-                            ),
-                          ],
-                        ),
+                      _showDialog(
+                        context,
+                        'Ошибка',
+                        'Не удалось зарегистрироваться. Попробуйте ещё раз.',
                       );
                     }
                   } catch (e) {
-                    // Ошибка соединения
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text('Ошибка'),
-                        content: Text('Ошибка соединения с сервером: $e'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text('ОК'),
-                          ),
-                        ],
-                      ),
+                    _showDialog(
+                      context,
+                      'Ошибка',
+                      'Ошибка соединения с сервером: $e',
                     );
                   }
                 } else {
-                  // Поля не заполнены
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text('Внимание'),
-                      content: Text('Заполните все поля.'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text('ОК'),
-                        ),
-                      ],
-                    ),
+                  _showDialog(
+                    context,
+                    'Внимание',
+                    'Заполните все поля.',
                   );
                 }
               },
@@ -200,11 +129,11 @@ class RegistrationPage extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white, // Белый текст на кнопке
+                  color: Colors.white,
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black, // Черная кнопка
+                backgroundColor: Colors.black,
                 minimumSize: Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
@@ -212,6 +141,26 @@ class RegistrationPage extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  // Метод для создания текстового поля с настраиваемыми параметрами
+  Widget _buildTextField(TextEditingController controller, String label, {bool obscureText = false}) {
+    return TextField(
+      controller: controller,
+      obscureText: obscureText,
+      style: TextStyle(color: Colors.black),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: Colors.black),
+        border: OutlineInputBorder(),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.black),
         ),
       ),
     );

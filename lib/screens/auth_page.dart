@@ -71,7 +71,7 @@ class _AuthPageState extends State<AuthPage> {
       backgroundColor: Colors.white, // Белый фон
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: Image.asset('assets/icons/back.png', width: 24, height: 24),  // Указываем путь к иконке и её размер
           onPressed: () {
             Navigator.pop(context);
           },
@@ -107,7 +107,7 @@ class _AuthPageState extends State<AuthPage> {
               style: TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 labelText: 'Электронная почта',
-                labelStyle: TextStyle(color: Colors.grey),
+                labelStyle: TextStyle(color: Colors.black),
                 border: OutlineInputBorder(),
               ),
             ),
@@ -119,7 +119,7 @@ class _AuthPageState extends State<AuthPage> {
               style: TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 labelText: 'Пароль',
-                labelStyle: TextStyle(color: Colors.grey),
+                labelStyle: TextStyle(color: Colors.black),
                 border: OutlineInputBorder(),
               ),
             ),
@@ -146,7 +146,7 @@ class _AuthPageState extends State<AuthPage> {
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
+                backgroundColor: Colors.black, // Кнопка с синим фоном
                 minimumSize: Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
@@ -161,7 +161,7 @@ class _AuthPageState extends State<AuthPage> {
                 Text(
                   'НУЖНА УЧЕТНАЯ ЗАПИСЬ?',
                   style: TextStyle(
-                    color: Colors.grey,
+                    color: Colors.black,
                     fontSize: 14,
                   ),
                 ),
@@ -179,7 +179,7 @@ class _AuthPageState extends State<AuthPage> {
               child: Text(
                 'Зарегистрироваться',
                 style: TextStyle(
-                  color: Colors.black,
+                  color: Colors.black, // Синий цвет для текста
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),

@@ -1,48 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:bazarshop/screens/search_page.dart';
 import 'package:bazarshop/screens/catalog_page.dart';
-import 'package:bazarshop/screens/auth_page.dart'; // Импортируем AuthPage
+import 'package:bazarshop/screens/auth_page.dart';
 import 'package:bazarshop/screens/cart_page.dart';
 
 class HomePage extends StatefulWidget {
-  final String jwtToken;  // параметр для получения jwtToken
-  final String email;     // параметр для получения email
+  final String jwtToken;
+  final String email;
 
-  HomePage({required this.jwtToken, required this.email});  // обязательные параметры
+  HomePage({Key? key, required this.jwtToken, required this.email}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  late VideoPlayerController _controller;
+  int _currentIndex = 0;
+  final List<String> imageList = [
+    "assets/image1.jpg",
+    "assets/image2.jpg",
+    "assets/image3.jpg",
+    "assets/image4.jpg",
+    "assets/image5.jpg",
+  ];
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = VideoPlayerController.asset("assets/videoplayback.mp4")
-      ..initialize().then((_) {
-        _controller.setLooping(true);
-        _controller.play();
-        setState(() {});
-      });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
+  // Функция для перехода на страницу поиска
   void navigateToSearch(String query) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => SearchPage(
           query: query,
-          jwtToken: widget.jwtToken,  // Передаем jwtToken
-          email: widget.email,        // Передаем email
+          jwtToken: widget.jwtToken,
+          email: widget.email,
         ),
       ),
     );
@@ -51,128 +42,108 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
+      backgroundColor: Colors.white,
+      body: Column(
         children: [
-          // Видео на заднем плане
-          if (_controller.value.isInitialized)
-            SizedBox.expand(
-              child: FittedBox(
-                fit: BoxFit.cover,
-                child: SizedBox(
-                  width: _controller.value.size.width,
-                  height: _controller.value.size.height,
-                  child: VideoPlayer(_controller),
+          // Верхняя панель
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "BAZAR",
+                  style: TextStyle(
+                    fontFamily: "Harper's Bazaar",
+                    color: Colors.black,
+                    fontSize: 35,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
+                IconButton(
+                  icon: Image.asset('assets/icons/cart.png', width: 24, height: 24),  // Указываем путь к иконке и её размер
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CartPage(jwtToken: widget.jwtToken),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
-          // Содержимое поверх видео
-          Column(
-            children: [
-              // Верхняя панель
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Кнопка каталог
-                    IconButton(
-                      icon: Icon(Icons.menu, color: Colors.white),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CatalogPage(
-                              jwtToken: widget.jwtToken,  // Передаем jwtToken
-                              email: widget.email,        // Передаем email
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    // Название BAZAR
-                    Text(
-                      "Urban Couture",
-                      style: TextStyle(
-                        fontFamily: "Harper's Bazaar", // Укажи шрифт
-                        color: Colors.black,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    // Кнопки лупа, профиль, корзина
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.search, color: Colors.white),
-                          onPressed: () {
-                            navigateToSearch("");  // Навигация на страницу поиска
-                          },
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.person, color: Colors.black),
-                          onPressed: () {
-                            // Навигация на AuthPage
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AuthPage(), // Исправляем ошибку
-                              ),
-                            );
-                          },
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.shopping_cart, color: Colors.white),
-                          onPressed: () {
-                            // Открыть корзину
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => CartPage(
-                                  jwtToken: widget.jwtToken, // Передаем jwtToken
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
+          ),
+
+          // Карусель
+          CarouselSlider(
+            options: CarouselOptions(
+              height: MediaQuery.of(context).size.height * 0.7, // Устанавливаем высоту 60% от высоты экрана
+              enlargeCenterPage: true,
+              autoPlay: true,
+              aspectRatio: 16 / 9,
+              onPageChanged: (index, reason) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+            ),
+            items: imageList.map((imagePath) {
+              return Container(
+                margin: EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  image: DecorationImage(
+                    image: AssetImage(imagePath),
+                    fit: BoxFit.cover, // Обрезаем изображение по размеру контейнера
+                  ),
                 ),
+              );
+            }).toList(),
+          ),
+
+
+          // Нижний HUD-бар
+          BottomNavigationBar(
+            backgroundColor: Colors.white,
+            selectedItemColor: Colors.white,
+            unselectedItemColor: Colors.grey,
+            items: [
+              BottomNavigationBarItem(
+                icon: Image.asset('assets/icons/catalog.png', width: 24, height: 24),
+                label: "Catalog",
               ),
-              Spacer(),
-              // Нижняя строка поиска
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        onSubmitted: navigateToSearch,
-                        style: TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.black.withOpacity(0.5),
-                          hintText: "Search...",
-                          hintStyle: TextStyle(color: Colors.white70),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30),
-                            borderSide: BorderSide.none,
-                          ),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 20),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    IconButton(
-                      icon: Icon(Icons.search, color: Colors.white),
-                      onPressed: () {
-                        // Поиск
-                      },
-                    ),
-                  ],
-                ),
+              BottomNavigationBarItem(
+                icon: Image.asset('assets/icons/search.png', width: 24, height: 24),
+                label: "Search",
+              ),
+              BottomNavigationBarItem(
+                icon: Image.asset('assets/icons/profile.png', width: 24, height: 24),
+                label: "Profile",
               ),
             ],
+            onTap: (index) {
+              if (index == 0) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CatalogPage(
+                      jwtToken: widget.jwtToken,
+                      email: widget.email,
+                    ),
+                  ),
+                );
+              } else if (index == 1) {
+                navigateToSearch(""); // Переход на страницу поиска
+              } else if (index == 2) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AuthPage(),
+                  ),
+                );
+              }
+            },
           ),
         ],
       ),

@@ -19,7 +19,7 @@ class ProductDetailsScreen extends StatelessWidget {
       'productId': product.id,
       'quantity': 1, // Измените по необходимости
     };
-    print('Отправляем данные: ${json.encode(requestData)}');
+    print('Отправляем запрос на добавление в корзину: ${json.encode(requestData)}');
 
     try {
       final response = await http.post(
@@ -31,12 +31,16 @@ class ProductDetailsScreen extends StatelessWidget {
         body: json.encode(requestData),
       );
 
+      // Логируем весь запрос, включая статус код и тело ответа
+      print('Ответ от сервера - Статус: ${response.statusCode}');
+      print('Ответ от сервера - Тело: ${response.body}');
+
       if (response.statusCode == 200) {
         // Если сервер вернул успешный ответ
         var responseData = jsonDecode(response.body);
 
         // Логируем ответ сервера в консоль
-        print('Ответ сервера: $responseData');
+        print('Ответ сервера (успешно): $responseData');
 
         String serverMessage = responseData['message'] ?? 'Продукт добавлен в корзину';
 
@@ -57,13 +61,14 @@ class ProductDetailsScreen extends StatelessWidget {
         var responseData = jsonDecode(response.body);
 
         // Логируем ошибку в консоль
-        print('Ошибка: $responseData');
+        print('Ошибка от сервера: $responseData');
 
         String errorMessage = responseData['error'] ?? 'Ошибка при добавлении в корзину';
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(errorMessage),
+            backgroundColor: Colors.red,  // Ошибка отображается с красным фоном
           ),
         );
       }
@@ -72,6 +77,7 @@ class ProductDetailsScreen extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Ошибка при добавлении в корзину: $error'),
+          backgroundColor: Colors.red,  // Ошибка отображается с красным фоном
         ),
       );
 

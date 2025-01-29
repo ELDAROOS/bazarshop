@@ -16,19 +16,26 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  late TextEditingController _searchController;
   late List<Product> _allItems = []; // Полный список товаров
   late List<Product> _filteredItems = []; // Отфильтрованные товары
   String _searchQuery = ""; // Текущий запрос
+  bool _isLoading = false; // Флаг загрузки
 
   @override
   void initState() {
     super.initState();
     _searchQuery = widget.query;
+    _searchController = TextEditingController(text: _searchQuery);
     _loadData();
   }
 
   // Загрузка данных с сервера
   Future<void> _loadData() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     final url = Uri.parse('http://localhost:8080/api/product');
 
     try {
@@ -47,6 +54,11 @@ class _SearchPageState extends State<SearchPage> {
       }
     } catch (e) {
       print('Ошибка загрузки данных: $e');
+      // Обработка ошибки
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -59,72 +71,82 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  // Обработка изменения текста поиска
+  void _onSearchChanged(String query) {
+    setState(() {
+      _searchQuery = query;
+    });
+    _filterItems();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'Поиск',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Colors.black), // Иконка назад
+        backgroundColor: Colors.black,
+        iconTheme: IconThemeData(color: Colors.white), // Иконка назад
         elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            // Поисковое поле
             TextField(
-              controller: TextEditingController(text: _searchQuery),
+              controller: _searchController,
               decoration: InputDecoration(
                 labelText: 'Что ищете?',
                 border: OutlineInputBorder(),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
+                  borderSide: BorderSide(color: Colors.white),
                 ),
               ),
-              onChanged: (value) {
-                setState(() {
-                  _searchQuery = value;
-                  _filterItems();
-                });
-              },
+              onChanged: _onSearchChanged,
             ),
             SizedBox(height: 16),
-            Expanded(
-              child: _filteredItems.isEmpty
-                  ? Center(
-                child: Text(
-                  'Ничего не найдено',
-                  style: TextStyle(fontSize: 18),
-                ),
+            // Индикатор загрузки
+            if (_isLoading)
+              Center(
+                child: CircularProgressIndicator(),
               )
-                  : ListView.builder(
-                itemCount: _filteredItems.length,
-                itemBuilder: (context, index) {
-                  final product = _filteredItems[index];
-                  return ListTile(
-                    title: Text(product.name),
-                    subtitle: Text('Цена: ${product.price}₽'),
-                    onTap: () {
-                      // Переход к деталям товара с передачей email
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ProductDetailsScreen(
-                            product: product,
-                            email: widget.email,  // Передаем email
-                            jwtToken: widget.jwtToken,  // Передаем jwtToken
+            else
+            // Список результатов поиска
+              Expanded(
+                child: _filteredItems.isEmpty
+                    ? Center(
+                  child: Text(
+                    'Ничего не найдено',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                )
+                    : ListView.builder(
+                  itemCount: _filteredItems.length,
+                  itemBuilder: (context, index) {
+                    final product = _filteredItems[index];
+                    return ListTile(
+                      title: Text(product.name),
+                      subtitle: Text('Цена: ${product.price}₽'),
+                      onTap: () {
+                        // Переход к деталям товара с передачей email
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProductDetailsScreen(
+                              product: product,
+                              email: widget.email,  // Передаем email
+                              jwtToken: widget.jwtToken,  // Передаем jwtToken
+                            ),
                           ),
-                        ),
-                      );
-
-                    },
-                  );
-                },
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
           ],
         ),
       ),
