@@ -209,7 +209,7 @@ class _CatalogPageState extends State<CatalogPage> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
-                                color: Colors.white,
+                                color: Colors.black,  // Текст черного цвета
                               ),
                             ),
                             subtitle: Text(
