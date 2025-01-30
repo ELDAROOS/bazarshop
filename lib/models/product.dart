@@ -7,6 +7,7 @@ class Product {
   final int quantity;
   final String productStatus;
   final String category;
+  final String gender;  // Add gender field
 
   Product({
     required this.code,
@@ -17,6 +18,7 @@ class Product {
     required this.quantity,
     required this.productStatus,
     required this.category,
+    required this.gender,  // Include gender in the constructor
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -32,11 +34,11 @@ class Product {
         category: json['category'] is String
             ? json['category'] as String
             : (json['category'] as Map<String, dynamic>)['name'] as String? ?? 'Uncategorized',
+        gender: json['gender'] as String? ?? 'Unspecified',  // Parse gender from JSON
       );
     } catch (e) {
       print('Ошибка при парсинге продукта: $e');
       throw Exception('Ошибка парсинга данных продукта');
     }
   }
-
 }

@@ -1,8 +1,9 @@
+import 'package:bazarshop/screens/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:bazarshop/screens/search_page.dart';
 import 'package:bazarshop/screens/catalog_page.dart';
-import 'package:bazarshop/screens/auth_page.dart';
+import 'package:bazarshop/screens/auth_page.dart';  // Импортируем AuthPage для редиректа
 import 'package:bazarshop/screens/cart_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -27,6 +28,7 @@ class _HomePageState extends State<HomePage> {
 
   // Функция для перехода на страницу поиска
   void navigateToSearch(String query) {
+    print("Переход на страницу поиска с запросом: $query");
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -39,8 +41,35 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // Функция для перехода на экран профиля
+  void navigateToProfile() {
+    if (widget.jwtToken == 'dummy_token' || widget.jwtToken.isEmpty) {
+      // Если токен некорректный, перенаправляем на экран авторизации
+      print("Некорректный токен, переходим на экран авторизации.");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => AuthPage()),  // Переход на экран авторизации
+      );
+    } else {
+      // Если токен корректный, переходим на экран профиля
+      print("Переход в ProfilePage с токеном: ${widget.jwtToken}");
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProfilePage(
+            jwtToken: widget.jwtToken,
+            email: widget.email,
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    print("Токен на странице HomePage: ${widget.jwtToken}");
+    print("Email на странице HomePage: ${widget.email}");
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -63,10 +92,12 @@ class _HomePageState extends State<HomePage> {
                 IconButton(
                   icon: Image.asset('assets/icons/cart.png', width: 24, height: 24),  // Указываем путь к иконке и её размер
                   onPressed: () {
+                    // Логируем переход в CartPage
+                    print("Переход в CartPage с токеном: ${widget.jwtToken}");
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CartPage(jwtToken: widget.jwtToken),
+                        builder: (context) => CartPage(jwtToken: widget.jwtToken), // Передаем токен в CartPage
                       ),
                     );
                   },
@@ -102,7 +133,6 @@ class _HomePageState extends State<HomePage> {
             }).toList(),
           ),
 
-
           // Нижний HUD-бар
           BottomNavigationBar(
             backgroundColor: Colors.white,
@@ -123,12 +153,16 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
             onTap: (index) {
+              print("Выбрана вкладка: $index");
+
               if (index == 0) {
+                // Логируем переход в CatalogPage
+                print("Переход в CatalogPage с токеном: ${widget.jwtToken}");
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => CatalogPage(
-                      jwtToken: widget.jwtToken,
+                      jwtToken: widget.jwtToken,  // Передаем токен в CatalogPage
                       email: widget.email,
                     ),
                   ),
@@ -136,12 +170,8 @@ class _HomePageState extends State<HomePage> {
               } else if (index == 1) {
                 navigateToSearch(""); // Переход на страницу поиска
               } else if (index == 2) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AuthPage(),
-                  ),
-                );
+                // Функция перехода на экран профиля
+                navigateToProfile();
               }
             },
           ),

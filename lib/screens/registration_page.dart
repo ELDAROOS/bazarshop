@@ -80,16 +80,26 @@ class RegistrationPage extends StatelessWidget {
 
                 if (email.isNotEmpty && password.isNotEmpty && username.isNotEmpty) {
                   try {
+                    // Формируем JSON-объект
+                    Map<String, String> requestBody = {
+                      'email': email,
+                      'password': password,
+                      'username': username,
+                      'role': 'USER',
+                    };
+
+                    // Преобразуем в строку JSON
+                    String jsonBody = jsonEncode(requestBody);
+                    print('Отправляемый JSON: $jsonBody'); // Вывод JSON в консоль
+
                     var response = await http.post(
                       Uri.parse('http://localhost:8080/auth/sign-up'),
                       headers: {'Content-Type': 'application/json'},
-                      body: jsonEncode({
-                        'email': email,
-                        'password': password,
-                        'username': username,
-                        'role': 'USER',
-                      }),
+                      body: jsonBody,
                     );
+
+                    print('Response status: ${response.statusCode}');
+                    print('Response body: ${response.body}');
 
                     if (response.statusCode == 200) {
                       _showDialog(
@@ -97,7 +107,6 @@ class RegistrationPage extends StatelessWidget {
                         'Успешно',
                         'Регистрация прошла успешно, сейчас перенаправим на страницу входа',
                       );
-                      // Переход на страницу авторизации
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => AuthPage()),
@@ -124,6 +133,7 @@ class RegistrationPage extends StatelessWidget {
                   );
                 }
               },
+
               child: Text(
                 'Создать учетную запись',
                 style: TextStyle(

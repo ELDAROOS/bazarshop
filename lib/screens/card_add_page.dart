@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class CardAddPage extends StatefulWidget {
   final String jwtToken; // Токен для авторизации
+  final Function(String) onCardAdded; // Функция обратного вызова для добавления карты
 
-  const CardAddPage({Key? key, required this.jwtToken}) : super(key: key);
+  const CardAddPage({Key? key, required this.jwtToken, required this.onCardAdded}) : super(key: key);
 
   @override
   _CardAddPageState createState() => _CardAddPageState();
@@ -33,7 +34,7 @@ class _CardAddPageState extends State<CardAddPage> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Здесь будет логика добавления карты
+                // Сохраняем данные карты и передаем их в родительский экран
                 _saveCardDetails(
                   _cardNumberController.text,
                   _expiryDateController.text,
@@ -72,12 +73,19 @@ class _CardAddPageState extends State<CardAddPage> {
 
   // Логика для сохранения данных карты
   void _saveCardDetails(String cardNumber, String expiryDate, String cvv) {
-    // Тут можно добавить логику для отправки данных на сервер или сохранения их локально.
+    // Здесь можно добавить логику для отправки данных на сервер или сохранения их локально.
     print('Номер карты: $cardNumber');
     print('Дата истечения: $expiryDate');
     print('CVV: $cvv');
+
+    // Обновляем родительский экран с добавленной картой
+    widget.onCardAdded(cardNumber); // Передаем номер карты обратно в родительский экран
+
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text('Карта успешно добавлена!'),
     ));
+
+    // Закрываем экран добавления карты
+    Navigator.pop(context);
   }
 }

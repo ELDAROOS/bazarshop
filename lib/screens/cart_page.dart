@@ -21,20 +21,21 @@ class _CartPageState extends State<CartPage> {
 
     final url = Uri.parse('http://localhost:8080/api/cart?email=$email');
 
-    print('Отправка GET-запроса по адресу: $url');
+    // Логируем URL и заголовки запроса
+    print('Отправка GET-запроса на URL: $url');
+    print('Заголовки запроса: {Authorization: Bearer ${widget.jwtToken}}');
 
     try {
       final response = await http.get(url, headers: {
         'Authorization': 'Bearer ${widget.jwtToken}',
       });
 
+      // Логируем статус и тело ответа
       print('Ответ от сервера - Статус: ${response.statusCode}');
       print('Ответ от сервера - Тело: ${response.body}');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
-
-        print('Ответ от сервера (успешно): $data');
 
         if (data.containsKey('items') && data['items'] != null && data['items'] is List) {
           final List<dynamic> cartItemsFromResponse = data['items'];
@@ -56,10 +57,34 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
+
+  Future<void> removeItemFromCart(String productId) async {
+    final decodedToken = JwtDecoder.decode(widget.jwtToken);
+    final email = decodedToken['email'];
+
+    final url = Uri.parse('http://localhost:8080/api/cart/remove?email=$email&productId=$productId');
+
+    try {
+      final response = await http.delete(url, headers: {
+        'Authorization': 'Bearer ${widget.jwtToken}',
+      });
+
+      if (response.statusCode == 200) {
+        setState(() {
+          cartItems.removeWhere((item) => item['id'] == productId);
+        });
+      } else {
+        print('Ошибка при удалении товара: ${response.body}');
+      }
+    } catch (e) {
+      print('Ошибка при удалении товара из корзины: $e');
+    }
+  }
+
   double calculateTotal() {
     double total = 0.0;
     for (var item in cartItems) {
-      total += item['price'] ?? 0.0;  // Если цена товара есть, добавляем ее к общей сумме
+      total += item['price'] ?? 0.0;
     }
     return total;
   }
@@ -85,7 +110,7 @@ class _CartPageState extends State<CartPage> {
           ),
         ),
         leading: IconButton(
-          icon: Image.asset('assets/icons/back.png', width: 24, height: 24),  // Указываем путь к иконке и её размер
+          icon: Image.asset('assets/icons/back.png', width: 24, height: 24),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -93,11 +118,15 @@ class _CartPageState extends State<CartPage> {
         actions: [
           IconButton(
             icon: Image.asset('assets/icons/search.png', width: 24, height: 24),
-            onPressed: () {},
+            onPressed: () {
+              // Действие для кнопки поиска
+            },
           ),
           IconButton(
             icon: Image.asset('assets/icons/profile.png', width: 24, height: 24),
-            onPressed: () {},
+            onPressed: () {
+              // Действие для кнопки профиля
+            },
           ),
         ],
       ),
@@ -136,11 +165,15 @@ class _CartPageState extends State<CartPage> {
                 itemCount: cartItems.length,
                 itemBuilder: (context, index) {
                   final item = cartItems[index];
-                  return CartItemWidget(item: item);
+                  return CartItemWidget(
+                    item: item,
+                    onRemove: () {
+                      removeItemFromCart(item['id']);
+                    },
+                  );
                 },
               ),
             ),
-            // Итоговая сумма
             if (cartItems.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 20),
@@ -175,8 +208,9 @@ class _CartPageState extends State<CartPage> {
 
 class CartItemWidget extends StatelessWidget {
   final Map<String, dynamic> item;
+  final VoidCallback onRemove;
 
-  CartItemWidget({required this.item});
+  CartItemWidget({required this.item, required this.onRemove});
 
   @override
   Widget build(BuildContext context) {
@@ -207,9 +241,7 @@ class CartItemWidget extends StatelessWidget {
         ),
         trailing: IconButton(
           icon: Icon(Icons.remove_circle_outline, color: Colors.red),
-          onPressed: () {
-            // Логика удаления товара
-          },
+          onPressed: onRemove, // Передаем действие удаления
         ),
       ),
     );

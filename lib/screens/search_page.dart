@@ -36,7 +36,7 @@ class _SearchPageState extends State<SearchPage> {
       _isLoading = true;
     });
 
-    final url = Uri.parse('http://localhost:8080/api/product');
+    final url = Uri.parse('http://localhost:8080/api/product/all');
 
     try {
       final response = await http.get(url, headers: {

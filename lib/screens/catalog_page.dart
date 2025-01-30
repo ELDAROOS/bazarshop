@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:bazarshop/models/product.dart';
-import 'package:bazarshop/screens/product_details_screen.dart'; // Импортируем экран с деталями товара
+import 'package:bazarshop/screens/product_details_screen.dart'; // Экран с деталями товара
 import 'package:bazarshop/screens/search_page.dart'; // Экран поиска
 import 'package:bazarshop/screens/profile_page.dart'; // Экран профиля
 import 'cart_page.dart';
 import 'search_page.dart';
+import 'package:jwt_decoder/jwt_decoder.dart'; // Импортируем библиотеку для работы с JWT
 
 class CatalogPage extends StatefulWidget {
   final String jwtToken;
@@ -19,31 +20,46 @@ class CatalogPage extends StatefulWidget {
 }
 
 class _CatalogPageState extends State<CatalogPage> {
-  String category = 'Женщины';
+  String category = 'Женщины';  // Начальная категория
   int _selectedIndex = 0; // Переменная для отслеживания текущего индекса выбранной кнопки
+
+  // Метод для извлечения email из JWT токена
+  String extractEmailFromToken(String token) {
+    try {
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      return decodedToken['email'] ?? ''; // Извлекаем email пользователя из токена
+    } catch (e) {
+      return ''; // Если ошибка при декодировании
+    }
+  }
 
   // Метод для загрузки товаров с использованием jwtToken
   Future<List<Product>> fetchProducts() async {
     try {
-      final url = Uri.parse('http://localhost:8080/api/product');
-      print("Отправка запроса на URL: $url");
-
+      final url = Uri.parse('http://localhost:8080/api/product/all');
       final response = await http.get(url, headers: {
         'Authorization': 'Bearer ${widget.jwtToken}', // JWT-токен
       });
 
-      print("Ответ от сервера: ${response.statusCode}");
-      print("Тело ответа: ${response.body}");
-
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        print("Парсинг JSON успешен: $data");
+        final List<dynamic> data = json.decode(response.body);  // Декодируем ответ в список
 
-        return data.map((json) {
-          return Product.fromJson(json ?? {});
-        }).toList();
+        // Фильтруем товары по выбранному полу
+        List<Product> filteredProducts = data
+            .map((json) => Product.fromJson(json))  // Преобразуем каждый элемент в объект Product
+            .where((product) {
+          if (category == 'Женщины') {
+            return product.gender == 'FEMALE';  // Отображаем только женские товары
+          } else if (category == 'Мужчины') {
+            return product.gender == 'MALE';  // Отображаем только мужские товары
+          }
+          return true;  // Если категория не выбрана, показываем все товары
+        })
+            .toList();
+
+        return filteredProducts;  // Возвращаем отфильтрованный список товаров
       } else {
-        throw Exception('HTTP ошибка: ${response.statusCode}');
+        throw Exception('Ошибка загрузки товаров: ${response.statusCode}');
       }
     } catch (e) {
       print("Ошибка в fetchProducts: $e");
@@ -61,13 +77,20 @@ class _CatalogPageState extends State<CatalogPage> {
       // Переход на страницу поиска
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => SearchPage(jwtToken: widget.jwtToken, email: widget.email, query: '',)),
+        MaterialPageRoute(builder: (context) => SearchPage(jwtToken: widget.jwtToken, query: '', email: '',)),
       );
     } else if (index == 1) {
-      // Переход на страницу профиля
+      // Извлекаем email перед переходом в профиль
+      String email = extractEmailFromToken(widget.jwtToken);
+
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ProfilePage(jwtToken: widget.jwtToken, email: widget.email, name: '',)),
+        MaterialPageRoute(
+          builder: (context) => ProfilePage(
+            jwtToken: widget.jwtToken,
+            email: email,  // Передаем email в профиль
+          ),
+        ),
       );
     } else if (index == 2) {
       Navigator.push(
@@ -83,7 +106,7 @@ class _CatalogPageState extends State<CatalogPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          icon: Image.asset('assets/icons/back.png', width: 24, height: 24),  // Указываем путь к иконке и её размер
+          icon: Image.asset('assets/icons/back.png', width: 24, height: 24),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -107,76 +130,55 @@ class _CatalogPageState extends State<CatalogPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                AnimatedContainer(
-                  duration: Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  width: category == 'Женщины' ? 130 : 120,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        category = 'Женщины';
-                      });
-                    },
-                    child: Text(
-                      'Женщины',
-                      style: TextStyle(
-                        color: category == 'Женщины' ? Colors.black : Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      category = 'Женщины';  // Выбрали категорию "Женщины"
+                    });
+                  },
+                  child: Text(
+                    'Женщины',
+                    style: TextStyle(
+                      color: category == 'Женщины' ? Colors.white : Colors.black,  // Устанавливаем белый текст для выбранной категории
                     ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: category == 'Женщины'
-                          ? Colors.white
-                          : Colors.black,
-                      side: BorderSide(
-                        color: category == 'Женщины'
-                            ? Colors.white
-                            : Colors.white.withOpacity(0.2),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: category == 'Женщины' ? Colors.black : Colors.white,  // Черный фон для выбранной категории
+                    side: BorderSide(
+                      color: category == 'Женщины' ? Colors.black : Colors.black.withOpacity(0.2),  // Черная рамка для выбранной категории
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                 ),
-                AnimatedContainer(
-                  duration: Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  width: category == 'Мужчины' ? 130 : 120,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        category = 'Мужчины';
-                      });
-                    },
-                    child: Text(
-                      'Мужчины',
-                      style: TextStyle(
-                        color: category == 'Мужчины' ? Colors.black : Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      category = 'Мужчины';  // Выбрали категорию "Мужчины"
+                    });
+                  },
+                  child: Text(
+                    'Мужчины',
+                    style: TextStyle(
+                      color: category == 'Мужчины' ? Colors.white : Colors.black,  // Устанавливаем белый текст для выбранной категории
                     ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: category == 'Мужчины'
-                          ? Colors.white
-                          : Colors.black,
-                      side: BorderSide(
-                        color: category == 'Мужчины'
-                            ? Colors.white
-                            : Colors.black.withOpacity(0.2),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: category == 'Мужчины' ? Colors.black : Colors.white,  // Черный фон для выбранной категории
+                    side: BorderSide(
+                      color: category == 'Мужчины' ? Colors.black : Colors.black.withOpacity(0.2),  // Черная рамка для выбранной категории
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                 ),
               ],
             ),
+
             SizedBox(height: 30),
             Expanded(
               child: FutureBuilder<List<Product>>(
@@ -224,12 +226,14 @@ class _CatalogPageState extends State<CatalogPage> {
 
                                 if (response.statusCode == 200) {
                                   final productDetails = json.decode(response.body);
+                                  String email = extractEmailFromToken(widget.jwtToken); // Извлекаем email
+
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => ProductDetailsScreen(
                                         product: Product.fromJson(productDetails),
-                                        email: widget.email,
+                                        email: email,  // Передаем email в ProductDetailsScreen
                                         jwtToken: widget.jwtToken,
                                       ),
                                     ),
